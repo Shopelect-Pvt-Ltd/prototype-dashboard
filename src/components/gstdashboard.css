@@ -1,0 +1,109 @@
+/* AirlineDashboard.css */
+.dashboard-container {
+  max-width: 2000px;
+  margin: 0 auto;
+  background-color: #f4f4f4; /* Light background color */
+  padding: 20px; /* Add padding for better spacing */
+}
+
+.toggle-container {
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.toggle-label {
+  margin-right: 30px;
+  font-weight: bolder;
+  color: #333; /* Dark text color */
+}
+
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 80px;
+  height: 40px;
+  padding-right: 10px;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #777; /* Darker slider color */
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+  border-radius: 30px;
+}
+
+.slider:before {
+  position: absolute;
+  content: '';
+  height: 36px;
+  width: 36px;
+  left: 2px;
+  bottom: 2px;
+  background-color: #fff; /* White slider button */
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #4caf50; /* Green color when toggled */
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(40px);
+  -ms-transform: translateX(40px);
+  transform: translateX(40px);
+}
+
+.toggle-label {
+  margin-left: 10px;
+  font-size: 24px; /* Adjusted font size */
+  color: #333;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+th,
+td {
+  border: 1px solid #cae6f2;
+  padding: 12px; /* Increased padding for better spacing */
+  text-align: left;
+  background-color: #f0f8ff; /* Light blue background color */
+  color: #333;
+}
+
+th {
+  background-color: #75cdf5;
+  color: #fff; /* White text color */
+}
+
+button {
+  padding: 10px 15px; /* Adjusted button padding */
+  cursor: pointer;
+  background-color: #2196f3; /* Blue button color */
+  color: #fff; /* White text color */
+  border: none;
+  border-radius: 5px;
+}
+
+button:hover {
+  background-color: #0b7dda; /* Darker blue color on hover */
+}

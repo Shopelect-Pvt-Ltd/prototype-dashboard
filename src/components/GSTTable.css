@@ -1,0 +1,65 @@
+/* scrapper.css */
+
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #bcdceee2;
+  margin: 0;
+  height: 90vh; /* Set the body height to 100% of the viewport height */
+}
+
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+h1 {
+  text-align: center;
+  margin-top: 20px;
+}
+
+label {
+  margin-right: 10px;
+  display: block;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+select {
+  margin-bottom: 20px;
+  padding: 10px;
+  width: 50%;
+  box-sizing: border-box;
+}
+
+table {
+  width: 100%;
+  margin: 20px 0;
+  border-collapse: collapse;
+}
+
+th, td {
+  border: 1px solid #7a9bf1;
+  text-align: left;
+  padding: 12px;
+}
+
+th {
+  background-color: #7a9bf1;
+}
+
+button {
+  background-color: #4CAF50;
+  color: rgb(168, 231, 240);
+  padding: 10px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+/* EditAirline.css (if needed) */
+/* Add styles specific to the EditAirline component if necessary */

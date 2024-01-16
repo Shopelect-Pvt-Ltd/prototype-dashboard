@@ -1,25 +1,27 @@
-import logo from './logo.svg';
-import './App.css';
+// src/App.js
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'; // Change 'Switch' to 'Routes'
+import Dashboard from './components/Dashboard';
+import ScraperDashboard from './components/ScraperDashboard';
+import AirlineCredsDashboard from './components/Airlinecredsdashboard';
+import GSTDashboard from './components/GSTdashboard'
+import GSTTable from './components/GSTTable'
+import AirlineTable from "./components/AirlineTable";
+import './App.css'; // Import the CSS file
 
-function App() {
+const App = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Routes> {/* Change 'Switch' to 'Routes' */}
+        <Route path="/" element={<Dashboard />} />
+        <Route path="/scraperdashboard" element={<ScraperDashboard />} />
+        <Route path="/Airlinedashboard" element={<AirlineCredsDashboard />} />
+        <Route path="/gstdashboard" element={<GSTDashboard />} />
+        <Route path="/gsttable" element={<GSTTable />} />
+        <Route path="/AirlineTable" element={<AirlineTable />} />
+      </Routes> {/* Change 'Switch' to 'Routes' */}
+    </Router>
   );
-}
+};
 
 export default App;

@@ -202,6 +202,7 @@ const handleSaveNew = async () => {
 
     // Add the new airline to the Firestore database with the custom ID
     const panRef = firestore.collection(`Workspace/${selectedWorkspace}/PANs`).doc(customId);
+    panRef.set({"PAN":customId});
     const airlineCredsRef = panRef.collection('Airline_Creds').doc(fieldId); // Firestore will still generate a unique ID for Airline_Creds
     await airlineCredsRef.set({
       id: airlineCredsRef.id, // This line includes the auto-generated ID for Airline_Creds

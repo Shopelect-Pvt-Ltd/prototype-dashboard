@@ -58,12 +58,15 @@ button:hover {
   max-width: 800px;
   margin: 0 auto;
   padding: 20px;
-  overflow-x: auto; /* Enable horizontal scrolling if needed */
+  max-height: 300px; /* Set a fixed height for the container */
+  overflow-y: auto; /* Enable vertical scrolling */
+  background-color: #fff; /* Add background color for the container */
+  border-radius: 8px; /* Add border-radius for a rounded look */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Add a subtle box shadow */
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
-  overflow-y: auto; /* Enable vertical scrolling */
 }

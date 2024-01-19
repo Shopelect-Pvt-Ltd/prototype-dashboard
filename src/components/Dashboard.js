@@ -5,9 +5,13 @@ import { Link } from 'react-router-dom';
 const Dashboard = () => {
   return (
     <div>
+      <div className="logo-container">
+        <img className="logo" src={process.env.PUBLIC_URL + '/Finkraft_Logo.jpeg'} alt="Company Logo" />
+      </div>
       <h1>INDEX Dashboard</h1>
       <div>
-        <Row title="Scrapper Dashboard" path="/scraperdashboard" />
+        {/* <a href="/scraperDashboard">Scraper Dashboard         <button>View</button></a> */}
+        <Row title="Scrapper Dashboard" path="/scraperDashboard" />
         <Row title="Airline Credential Dashboard" path="/Airlinedashboard" />
         <Row title="GST Credential Dashboard" path="/gstdashboard" />
         <Row title="GST Credential Table" path="/gsttable" />

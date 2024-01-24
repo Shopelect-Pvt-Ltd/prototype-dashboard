@@ -5,16 +5,6 @@ import './AirlineTable.css';
 import EditAirline from './EditAirline'; // Import the new component
 import firebaseConfig from '../config/firebase'
 
-// Initialize Firebase (Make sure to replace these config values with your own)
-// const firebaseConfig = {
-//   apiKey: "AIzaSyD33JyUFjugVISjRu_yElDamtvR0-6tBlU",
-//   authDomain: "prototype-finkraft.firebaseapp.com",
-//   projectId: "prototype-finkraft",
-//   storageBucket: "prototype-finkraft.appspot.com",
-//   messagingSenderId: "283994867558",
-//   appId: "1:283994867558:web:d5038e6f45625e3c86eaa7",
-//   measurementId: "G-6J2FHW78VS"
-// };
 
 firebase.initializeApp(firebaseConfig);
 const firestore = firebase.firestore();

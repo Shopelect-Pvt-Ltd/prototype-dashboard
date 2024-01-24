@@ -1,69 +1,115 @@
-/* src/App.css */
+/* AirlineTable.css */
 
 body {
   font-family: 'Arial', sans-serif;
+  background: linear-gradient(to right, #3498db, #c2f2d6);
   margin: 0;
-  padding: 0;
-  background: linear-gradient(to right, #3498db, #2ecc71);
+  min-height: 30vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .container {
-  max-width: 800px;
-  margin: 0 auto;
+  max-width: 1000px;
+  width: 90%;
+  margin: 20px auto;
   padding: 20px;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-.logo-container {
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-.logo {
-  width: 150px;
-  height: auto;
+  background-color: #ffffff;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 h1 {
-  color: #191919;
+  text-align: center;
+  margin-top: 30px;
+  color: #333;
 }
 
-.row {
-  margin-bottom: 20px;
-}
-
-.row p {
-  font-size: 18px;
+label {
+  margin-right: 10px;
+  display: block;
+  font-weight: bold;
   margin-bottom: 8px;
+  font-size: 22px;
+}
+
+select {
+  margin-bottom: 20px;
+  padding: 15px;
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 20px;
+}
+
+table {
+  width: 100%;
+  margin: 20px 0;
+  border-collapse: collapse;
+  overflow: hidden;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+th, td {
+  border: 1px solid #7a9bf1;
+  text-align: left;
+  padding: 12px;
+}
+
+th {
+  background-color: #7a9bf1;
+  color: #fff;
+}
+
+tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
 }
 
 button {
-  padding: 8px 16px;
-  background-color: #4caf50;
+  background-color: #4CAF50;
   color: #fff;
+  padding: 10px 15px;
   border: none;
-  cursor: pointer;
   border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 button:hover {
   background-color: #45a049;
 }
 
-.table-container {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
-  overflow-x: auto; /* Enable horizontal scrolling if needed */
+/* New styles for the Action column buttons */
+td button {
+  margin-right: 5px;
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
-  overflow-y: auto; /* Enable vertical scrolling */
+td button.edit {
+  background-color: #007bff;
+  color: #fff;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+td button.edit:hover {
+  background-color: #0056b3;
+}
+
+td button.delete {
+  background-color: #dc3545;
+  color: #fff;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+td button.delete:hover {
+  background-color: #c82333;
 }

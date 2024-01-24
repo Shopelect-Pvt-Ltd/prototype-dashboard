@@ -1,65 +1,44 @@
 // EditAirline.js
-import React, { useState, useEffect } from 'react';
+
+import React, { useState } from 'react';
 
 const EditAirline = ({ editingAirline, onSave, onCancel }) => {
   const [editedAirline, setEditedAirline] = useState({ ...editingAirline });
 
-  // Update the editedAirline state when editingAirline changes
-  useEffect(() => {
-    setEditedAirline({ ...editingAirline });
-  }, [editingAirline]);
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setEditedAirline((prevData) => ({ ...prevData, [name]: value }));
+  };
 
-  const handleInputChange = (field, value) => {
-    setEditedAirline((prevAirline) => ({ ...prevAirline, [field]: value }));
+  const handleSave = () => {
+    onSave(editedAirline);
   };
 
   return (
-    <div>
-      <h2>Edit Airline</h2>
-      <label>Name:</label>
-      <input
-        type="text"
-        value={editedAirline.airline_name}
-        onChange={(e) => handleInputChange('airline_name', e.target.value)}
-      />
-      <label>PAN:</label>
-      <input
-        type="text"
-        value={editedAirline.portal_id}
-        onChange={(e) => handleInputChange('portal_id', e.target.value)}
-      />
-      <label>Last Ran:</label>
-      <input
-        type="text"
-        value={editedAirline.last_ran}
-        onChange={(e) => handleInputChange('last_ran', e.target.value)}
-      />
-      <label>Files Count:</label>
-      <input
-        type="text"
-        value={editedAirline.files_count}
-        onChange={(e) => handleInputChange('files_count', e.target.value)}
-      />
-      <label>Imap URL:</label>
-      <input
-        type="text"
-        value={editedAirline.imap_url}
-        onChange={(e) => handleInputChange('imap_url', e.target.value)}
-      />
-      <label>Portal ID:</label>
-      <input
-        type="text"
-        value={editedAirline.portal_id}
-        onChange={(e) => handleInputChange('portal_id', e.target.value)}
-      />
-      <label>Portal Pass:</label>
-      <input
-        type="text"
-        value={editedAirline.portal_pass}
-        onChange={(e) => handleInputChange('portal_pass', e.target.value)}
-      />
-      <button onClick={() => onSave(editedAirline)}>Save</button>
-      <button onClick={onCancel}>Cancel</button>
+    <div className="edit-popup">
+      <div className="edit-popup-content">
+        <h2>Edit Airline</h2>
+        <label>Airline Name:</label>
+        <input type="text" name="airline_name" value={editedAirline.airline_name} onChange={handleChange} />
+        {/* Add input fields for other properties as needed */}
+        <label>Portal ID:</label>
+        <input type="text" name="portal_id" value={editedAirline.portal_id} onChange={handleChange} />
+        {/* Add input fields for other properties as needed */}
+        <label>Last Ran:</label>
+        <input type="text" name="last_ran" value={editedAirline.last_ran} onChange={handleChange} />
+        {/* Add input fields for other properties as needed */}
+        <label>Files Count:</label>
+        <input type="text" name="files_count" value={editedAirline.files_count} onChange={handleChange} />
+        {/* Add input fields for other properties as needed */}
+        <label>Imap URL:</label>
+        <input type="text" name="imap_url" value={editedAirline.imap_url} onChange={handleChange} />
+        {/* Add input fields for other properties as needed */}
+        <label>Portal Pass:</label>
+        <input type="text" name="portal_pass" value={editedAirline.portal_pass} onChange={handleChange} />
+
+        <button onClick={handleSave}>Save</button>
+        <button onClick={onCancel}>Cancel</button>
+      </div>
     </div>
   );
 };

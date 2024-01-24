@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { Link } from 'react-router-dom';
 import { firestore, collection, getDocs } from '../config/firebase'; // Import the firestore instance
-import './Airlinedash.css';
+import '../css-importer';
 
 
 const AirlineCredsDashboard = () => {

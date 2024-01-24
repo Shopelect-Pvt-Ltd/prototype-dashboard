@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { Link } from 'react-router-dom';
 import { firestore, collection, getDocs } from "../config/firebase"
-import './gstdashboard.css';
+import '../css-importer';
 
 const GSTDashboard = () => {
   const [selectedOption, setSelectedOption] = useState('Airlines');

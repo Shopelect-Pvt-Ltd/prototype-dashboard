@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { firestore, collection, getDocs } from '../config/firebase'; // Adjust the path accordingly
-import './GSTTable.css';
+import '../css-importer';
 
 const GSTTable = () => {
   const [selectedOption, setSelectedOption] = useState('Airlines');

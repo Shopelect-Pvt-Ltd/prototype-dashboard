@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
-import './AirlineTable.css';
+import '../css-importer';
 import EditAirline from './EditAirline'; // Import the new component
 import firebaseConfig from '../config/firebase'
 

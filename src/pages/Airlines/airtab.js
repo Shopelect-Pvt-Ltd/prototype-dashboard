@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
-import './AirlineTable.css';
+import '../css-importer';
 
 // Initialize Firebase (Make sure to replace these config values with your own)
 const firebaseConfig = {

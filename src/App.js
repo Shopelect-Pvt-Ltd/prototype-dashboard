@@ -1,12 +1,12 @@
 // src/App.js
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'; // Change 'Switch' to 'Routes'
-import Dashboard from './components/Dashboard';
-import ScraperDashboard from "./components/ScraperDashboard";
-import AirlineCredsDashboard from './components/Airlines/Airlinecredsdashboard';
-import GSTDashboard from './components/GST/GSTdashboard'
-import GSTTable from './components/GST/GSTTable'
-import AirlineTable from "./components/Airlines/AirlineTable";
+import Dashboard from './pages/homepage/Dashboard';
+import ScraperDashboard from "./pages/Scrapers/ScraperDashboard";
+import AirlineCredsDashboard from "./pages/Airlines/Airlinecredsdashboard";
+import GSTDashboard from './pages/GST/GSTdashboard'
+import GSTTable from "./pages/GST/GSTTable"
+import AirlineTable from "./pages/Airlines/AirlineTable";
 import './App.css'; // Import the CSS file
 
 const App = () => {

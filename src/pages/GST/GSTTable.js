@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { firestore, collection, getDocs } from '../firebase'; // Adjust the path accordingly
+import { firestore, collection, getDocs } from '../config/firebase'; // Adjust the path accordingly
 import './GSTTable.css';
 
 const GSTTable = () => {

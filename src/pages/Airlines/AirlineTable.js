@@ -3,17 +3,18 @@ import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
 import './AirlineTable.css';
 import EditAirline from './EditAirline'; // Import the new component
+import firebaseConfig from '../config/firebase'
 
 // Initialize Firebase (Make sure to replace these config values with your own)
-const firebaseConfig = {
-  apiKey: "AIzaSyD33JyUFjugVISjRu_yElDamtvR0-6tBlU",
-  authDomain: "prototype-finkraft.firebaseapp.com",
-  projectId: "prototype-finkraft",
-  storageBucket: "prototype-finkraft.appspot.com",
-  messagingSenderId: "283994867558",
-  appId: "1:283994867558:web:d5038e6f45625e3c86eaa7",
-  measurementId: "G-6J2FHW78VS"
-};
+// const firebaseConfig = {
+//   apiKey: "AIzaSyD33JyUFjugVISjRu_yElDamtvR0-6tBlU",
+//   authDomain: "prototype-finkraft.firebaseapp.com",
+//   projectId: "prototype-finkraft",
+//   storageBucket: "prototype-finkraft.appspot.com",
+//   messagingSenderId: "283994867558",
+//   appId: "1:283994867558:web:d5038e6f45625e3c86eaa7",
+//   measurementId: "G-6J2FHW78VS"
+// };
 
 firebase.initializeApp(firebaseConfig);
 const firestore = firebase.firestore();
@@ -64,8 +65,8 @@ const AirlineTable = () => {
           }
 
           const allTableData = snapshot.docs.map(doc => ({
-            id: doc.id,
             ...doc.data(),
+            id: doc.id,  // changes made here for edit functinality issues
           }));
 
           setTableData(allTableData);
@@ -84,6 +85,7 @@ const AirlineTable = () => {
   };
 
   const handleEdit = (index) => {
+    console.log("HANDLE EDIT:", index);
     setEditIndex(index);
   };
 
@@ -97,6 +99,7 @@ const AirlineTable = () => {
       // Reference to the Firestore document to be updated
       const airlineCredsRef = firestore.collection(`cred_ls/${selectedWorkspace}/creds`).doc(editedAirline.id);
 
+      console.log("HANDLE SAVE EDIT", editedAirline);
       // Check if the document exists before updating
       const docSnapshot = await airlineCredsRef.get();
 

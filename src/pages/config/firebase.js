@@ -14,7 +14,7 @@ const firebaseConfig = {
     measurementId: "G-6J2FHW78VS"
 }
 
-
+export default firebaseConfig;
 
 // export const auth = firebase.auth();
 // Initialize Firebase
@@ -36,3 +36,4 @@ const credList = async function getCreds(firestore) {
   
 
 export { app, auth, firestore, credList, collection, getDocs };
+

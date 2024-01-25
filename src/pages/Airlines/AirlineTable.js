@@ -4,6 +4,7 @@ import 'firebase/compat/firestore';
 import '../css-importer';
 import EditAirline from './EditAirline'; // Import the new component
 import firebaseConfig from '../config/firebase'
+import Popup from './popup';
 
 
 firebase.initializeApp(firebaseConfig);
@@ -206,12 +207,24 @@ const AirlineTable = () => {
       </select>
 
       {editIndex !== null && (
-        <EditAirline
-          editingAirline={tableData[editIndex]}
-          onSave={handleSaveEdit}
-          onCancel={handleCancelEdit}
+        <Popup onClose={handleCancelEdit}>
+          <EditAirline
+            editingAirline={tableData[editIndex]}
+            onSave={handleSaveEdit}
+            onCancel={handleCancelEdit}
+          />
+        </Popup>
+      )}
 
-        />
+      {isAddNewFormOpen && (
+        <Popup onClose={handleCancelNew}>
+          <div>
+            <h2>Add New Airline</h2>
+            {/* Your existing code for the add new form */}
+            <button onClick={handleSaveNew}>Save</button>
+            <button onClick={handleCancelNew}>Cancel</button>
+          </div>
+        </Popup>
       )}
 
       {selectedWorkspace && (

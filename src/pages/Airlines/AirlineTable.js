@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
 import '../css-importer';
-import EditAirline from './EditAirline'; // Import the new component
+import EditAirline from './EditAirline';
+import Popup from './popup'; // Import the new Popup component
 import firebaseConfig from '../config/firebase'
-import Popup from './popup';
-
+import axios from 'axios';  // Import Axios library
+import { useNavigate, createSearchParams } from 'react-router-dom';
 
 firebase.initializeApp(firebaseConfig);
 const firestore = firebase.firestore();
@@ -25,6 +26,8 @@ const AirlineTable = () => {
   });
   const [isAddNewFormOpen, setIsAddNewFormOpen] = useState(false);
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     const fetchWorkspaces = async () => {
       try {
@@ -42,6 +45,18 @@ const AirlineTable = () => {
     fetchWorkspaces();
   }, []);
 
+  const handleLogs = (airline, index) => {
+    console.log("Index", index, airline)
+    navigate({
+      pathname: `/logsList`,
+      search: `?${createSearchParams({
+          workspace: `${airline.workspace}`,
+          workspace_id: `${airline.id}`
+      })}`
+  });
+    // navigate(`/logsList`);
+  };
+
   useEffect(() => {
     const fetchTableData = async () => {
       try {
@@ -57,7 +72,7 @@ const AirlineTable = () => {
 
           const allTableData = snapshot.docs.map(doc => ({
             ...doc.data(),
-            id: doc.id,  // changes made here for edit functinality issues
+            id: doc.id,
           }));
 
           setTableData(allTableData);
@@ -72,42 +87,58 @@ const AirlineTable = () => {
 
   const handleDropdownChange = (e) => {
     setSelectedWorkspace(e.target.value);
-    setEditIndex(null); // Reset editIndex when workspace changes
+    setEditIndex(null);
   };
 
+  const handleRun = async (index) => {
+    try {
+        const airlineData = tableData[index];
+
+        // const data = {
+        //     "airline_name": "lufthansa_swiss",
+        //     "code": "MB95",
+        //     "id": "ATohTaTcH3kLzMqRypDH",
+        //     "last_ran": "2023-12-29 16:17:17.153838",
+        //     "pan": "ABAFA5984C",
+        //     "portal_id": "Admin",
+        //     "portal_pass": "Acg@1234567",
+        //     "remarks": "No Error",
+        //     "run_days_interval": "7",
+        //     "verified": "No",
+        //     "workspace": "ACG"
+        // };
+
+        const response = await axios.post('https://lufthansa-fn-sk7dyq62iq-uc.a.run.app', airlineData);
+        console.log('API Response:', response.data);
+    } catch (error) {
+        console.error('Error making API request:', error);
+    }
+};
+
+
   const handleEdit = (index) => {
-    console.log("HANDLE EDIT:", index);
     setEditIndex(index);
   };
 
   const handleCancelEdit = () => {
-    // Reset editIndex
     setEditIndex(null);
   };
 
   const handleSaveEdit = async (editedAirline) => {
     try {
-      // Reference to the Firestore document to be updated
       const airlineCredsRef = firestore.collection(`cred_ls/${selectedWorkspace}/creds`).doc(editedAirline.id);
-
-      console.log("HANDLE SAVE EDIT", editedAirline);
-      // Check if the document exists before updating
       const docSnapshot = await airlineCredsRef.get();
 
       if (!docSnapshot.exists) {
         console.error('Document does not exist:', editedAirline.id);
-        // Handle the situation where the document doesn't exist
         return;
       }
 
-      // Update the Firestore document with the edited data
       await airlineCredsRef.update(editedAirline);
 
-      // Update the edited airline data in the tableData array
       const updatedTableData = tableData.map((item, i) => (i === editIndex ? editedAirline : item));
       setTableData(updatedTableData);
 
-      // Reset editIndex
       setEditIndex(null);
     } catch (error) {
       console.error('Error updating data in Firestore:', error);
@@ -122,7 +153,6 @@ const AirlineTable = () => {
 
       await airlineCredsRef.delete();
 
-      // Remove the airline from the tableData array
       const updatedTableData = tableData.filter((item, i) => i !== index);
       setTableData(updatedTableData);
     } catch (error) {
@@ -136,13 +166,11 @@ const AirlineTable = () => {
   };
 
   const handleAddNewClick = () => {
-    // Open the add new form
     setIsAddNewFormOpen(true);
   };
 
   const handleSaveNew = async () => {
     try {
-      // Validate new data (you can add more validation as needed)
       if (!newAirline.airline_name || !newAirline.portal_id || !newAirline.last_ran || !newAirline.files_count || !newAirline.imap_url || !newAirline.portal_pass) {
         console.error('Please enter all required fields.');
         return;
@@ -151,17 +179,14 @@ const AirlineTable = () => {
       const panRef = firestore.collection(`cred_ls/${selectedWorkspace}/creds`);
       const newAirlineDocRef = await panRef.add(newAirline);
 
-      // Update the new airline's local state with the generated ID
       setNewAirline({
         ...newAirline,
         id: newAirlineDocRef.id,
       });
 
-      // Add the new airline to the tableData array
       const updatedTableData = [...tableData, newAirline];
       setTableData(updatedTableData);
 
-      // Reset the new airline form
       setNewAirline({
         airline_name: '',
         portal_id: '',
@@ -171,7 +196,6 @@ const AirlineTable = () => {
         portal_pass: '',
       });
 
-      // Close the add new form
       setIsAddNewFormOpen(false);
     } catch (error) {
       console.error('Error adding new data:', error);
@@ -179,7 +203,6 @@ const AirlineTable = () => {
   };
 
   const handleCancelNew = () => {
-    // Reset the new airline form
     setNewAirline({
       airline_name: '',
       portal_id: '',
@@ -189,7 +212,6 @@ const AirlineTable = () => {
       portal_pass: '',
     });
 
-    // Close the add new form
     setIsAddNewFormOpen(false);
   };
 
@@ -216,76 +238,64 @@ const AirlineTable = () => {
         </Popup>
       )}
 
-      {isAddNewFormOpen && (
-        <Popup onClose={handleCancelNew}>
-          <div>
-            <h2>Add New Airline</h2>
-            {/* Your existing code for the add new form */}
-            <button onClick={handleSaveNew}>Save</button>
-            <button onClick={handleCancelNew}>Cancel</button>
-          </div>
-        </Popup>
-      )}
+        {isAddNewFormOpen && (
+              <Popup onClose={handleCancelNew}>
+                <div>
+                  <h2>Add New Airline</h2>
+                  <label>Airline Name:</label>
+                  <input
+                    type="text"
+                    name="airline_name"
+                    value={newAirline.airline_name}
+                    onChange={handleNewAirlineChange}
+                  />
+                  <label>Portal ID:</label>
+                  <input
+                    type="text"
+                    name="portal_id"
+                    value={newAirline.portal_id}
+                    onChange={handleNewAirlineChange}
+                  />
+                  <label>Last Ran:</label>
+                  <input
+                    type="text"
+                    name="last_ran"
+                    value={newAirline.last_ran}
+                    onChange={handleNewAirlineChange}
+                  />
+                  <label>Files Count:</label>
+                  <input
+                    type="text"
+                    name="files_count"
+                    value={newAirline.files_count}
+                    onChange={handleNewAirlineChange}
+                  />
+                  <label>Imap URL:</label>
+                  <input
+                    type="text"
+                    name="imap_url"
+                    value={newAirline.imap_url}
+                    onChange={handleNewAirlineChange}
+                  />
+                  <label>Portal Pass:</label>
+                  <input
+                    type="text"
+                    name="portal_pass"
+                    value={newAirline.portal_pass}
+                    onChange={handleNewAirlineChange}
+                  />
+                  <div>
+                    <button onClick={handleSaveNew}>Save</button>
+                    <button onClick={handleCancelNew}>Cancel</button>
+                  </div>
+                </div>
+              </Popup>
+            )}
+      
 
       {selectedWorkspace && (
         <div>
           <button onClick={handleAddNewClick}>Add New</button>
-
-          {isAddNewFormOpen && (
-            <div>
-              <h2>Add New Airline</h2>
-              <label>Airline Name:</label>
-              <input
-                type="text"
-                name="airline_name"
-                value={newAirline.airline_name}
-                onChange={handleNewAirlineChange}
-              />
-              {/* Add input fields for other properties as needed */}
-              <label>Portal ID:</label>
-              <input
-                type="text"
-                name="portal_id"
-                value={newAirline.portal_id}
-                onChange={handleNewAirlineChange}
-              />
-              {/* Add input fields for other properties as needed */}
-              <label>Last Ran:</label>
-              <input
-                type="text"
-                name="last_ran"
-                value={newAirline.last_ran}
-                onChange={handleNewAirlineChange}
-              />
-              {/* Add input fields for other properties as needed */}
-              <label>Files Count:</label>
-              <input
-                type="text"
-                name="files_count"
-                value={newAirline.files_count}
-                onChange={handleNewAirlineChange}
-              />
-              {/* Add input fields for other properties as needed */}
-              <label>Imap URL:</label>
-              <input
-                type="text"
-                name="imap_url"
-                value={newAirline.imap_url}
-                onChange={handleNewAirlineChange}
-              />
-              {/* Add input fields for other properties as needed */}
-              <label>Portal Pass:</label>
-              <input
-                type="text"
-                name="portal_pass"
-                value={newAirline.portal_pass}
-                onChange={handleNewAirlineChange}
-              />
-
-              <button onClick={handleSaveNew}>Save</button>
-              <button onClick={handleCancelNew}>Cancel</button>
-            </div>
-          )}
 
           <table>
             <thead>
@@ -309,9 +319,10 @@ const AirlineTable = () => {
                   <td>{airline.imap_url}</td>
                   <td>{airline.portal_pass}</td>
                   <td>
-                    <button onClick={() => handleEdit(index)}>Edit</button>
-                    <button onClick={() => handleDelete(index)}>Delete</button>
-                    <button onClick={() => handleDelete(index)}>Run</button>
+                    <button onClick={() => handleEdit(airline, index)}>Edit</button>
+                    <button onClick={() => handleDelete(airline, index)}>Delete</button>
+                    <button onClick={() => handleRun(airline, index)}>Run</button>
+                    <button onClick={() => handleLogs(airline,index)}>Logs</button>
                   </td>
                 </tr>
               ))}

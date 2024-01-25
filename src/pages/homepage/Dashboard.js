@@ -10,7 +10,6 @@ const Dashboard = () => {
       </div>
       <h1>INDEX Dashboard</h1>
       <div>
-        {/* <a href="/scraperDashboard">Scraper Dashboard         <button>View</button></a> */}
         <Row title="Scrapper Dashboard" path="/scraperDashboard" />
         <Row title="Airline Credential Dashboard" path="/Airlinedashboard" />
         <Row title="GST Credential Dashboard" path="/gstdashboard" />

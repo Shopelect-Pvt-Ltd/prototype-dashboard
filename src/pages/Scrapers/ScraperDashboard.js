@@ -5,6 +5,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import '../css-importer';
 
+
 const ScraperDashboard = () => {
   const [selectedWorkspace, setSelectedWorkspace] = useState('');
   const [startDate, setStartDate] = useState(null);
@@ -73,19 +74,16 @@ const ScraperDashboard = () => {
         />
       </label>
 
-      <div>
-        <label>
-          {isAirlineMode ? 'Airline' : 'GST'} Mode
-          <label className="switch">
-            <input type="checkbox" checked={isAirlineMode} onChange={() => setIsAirlineMode(!isAirlineMode)} />
-            <span className="slider"></span>
-          </label>
+      <div className="run-all-section">
+        <Link to="/in-progress">
+          <button onClick={handleRunAllClick}>RUN ALL</button>
+        </Link>
+
+        <label className="switch">
+          <input type="checkbox" checked={isAirlineMode} onChange={() => setIsAirlineMode(!isAirlineMode)} />
+          <span className="slider"></span>
         </label>
       </div>
-
-      <Link to="/in-progress">
-        <button onClick={handleRunAllClick}>RUN ALL</button>
-      </Link>
 
       <table>
         <thead>

@@ -1,20 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { firestore, collection, getDocs } from '../config/firebase'; // Adjust the path accordingly
+import { AgGridReact } from 'ag-grid-react';
+import 'ag-grid-community/styles/ag-grid.css';
+import 'ag-grid-community/styles/ag-theme-alpine.css';
 import '../css-importer';
 
 const GSTTable = () => {
   const [selectedOption, setSelectedOption] = useState('Airlines');
-  const [data, setData] = useState([]);
+  const [rowData, setRowData] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const collectionName = 
-          selectedOption === 'workspaces' ? 'Data ' : 'WorkspaceCred';
-          const credsCol = collection(firestore, 'workspaces', 'BCG', 'TableData',);
+        const collectionName =
+          selectedOption === 'Airlines' ? 'WorkspaceCred' : 'OtherCollection'; // Adjust as per your collection names
+        const credsCol = collection(firestore, 'workspaces', 'BCG', 'TableData');
         const snapshot = await getDocs(credsCol);
-        const newData = snapshot.docs.map((doc) => doc.data());
-        setData(newData);
+        const newData = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setRowData(newData);
         console.log('Data fetched successfully:', newData);
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -28,6 +34,31 @@ const GSTTable = () => {
     setSelectedOption(event.target.value);
   };
 
+  const handleEdit = (id) => {
+    console.log('Edit button clicked for id:', id);
+    // Add your edit logic here
+  };
+
+  const handleDelete = (id) => {
+    console.log('Delete button clicked for id:', id);
+    // Add your delete logic here
+  };
+
+  const columnDefs = [
+    { headerName: 'GSTIN', field: 'GSTIN' },
+    { headerName: 'UserID', field: 'UserID' },
+    { headerName: 'Password', field: 'Password' },
+    { headerName: 'OTP Required', field: 'otp' },
+    {
+      headerName: 'Action',
+      cellRenderer: ActionRenderer, // Use the name of the framework component
+    },
+  ];
+
+  const frameworkComponents = {
+    ActionRenderer: ActionRenderer,
+  };
+
   return (
     <div className="dashboard-container">
       <h1>GST CREDENTIAL TABLE</h1>
@@ -38,38 +69,27 @@ const GSTTable = () => {
           {/* Add other client options as needed */}
         </select>
       </div>
-      <button>Add New</button>
-      <table>
-        <thead>
-          <tr>
-            <th>GSTIN</th>
-            <th>UserID</th>
-            <th>Password</th>
-            <th>OTP Required</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.length > 0 ? (
-            data.map((item, index) => (
-              <tr key={index}>
-                <td>{item.GSTIN}</td>
-                <td>{item.UserID}</td>
-                <td>{item.Password}</td>
-                <td>{item.otp}</td>
-                <td>
-                  <button>Edit</button>
-                  <button>Delete</button>
-                </td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="5">No data available</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+      <div className="ag-theme-alpine" style={{ height: 400, width: '100%' }}>
+        <AgGridReact
+          columnDefs={columnDefs}
+          rowData={rowData}
+          animateRows={true} // Enable row animations
+          rowSelection="multiple" // Enable row selection
+          frameworkComponents={frameworkComponents}
+          handleEdit={handleEdit}
+          handleDelete={handleDelete}
+        />
+      </div>
+    </div>
+  );
+};
+
+const ActionRenderer = (props) => {
+  const { data, handleEdit, handleDelete } = props;
+  return (
+    <div>
+      <button className="ag-icon-button" onClick={() => handleEdit(data.id)}>Edit</button>
+      <button className="ag-icon-button" onClick={() => handleDelete(data.id)}>Delete</button>
     </div>
   );
 };

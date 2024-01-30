@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import ReactDOM from 'react-dom';
 import { Link } from 'react-router-dom';
 import { firestore, collection, getDocs } from '../config/firebase'; // Import the firestore instance
 import '../css-importer';
-
 
 const AirlineCredsDashboard = () => {
   const [selectedOption, setSelectedOption] = useState('Airlines');
@@ -19,12 +17,11 @@ const AirlineCredsDashboard = () => {
     const fetchData = async () => {
       try {
         const collectionName = selectedOption === 'Airlines' ? 'AirlinesCred' : 'WorkspaceCred';
-        console.log(collectionName);
         const credsCol = collection(firestore, collectionName);
         const snapshot = await getDocs(credsCol);
         const newData = snapshot.docs.map(doc => doc.data());
         setData(newData);
-        console.log('Data fetched successfully:', newData); // Add this line
+        console.log('Data fetched successfully:', newData);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -32,7 +29,6 @@ const AirlineCredsDashboard = () => {
   
     fetchData();
   }, [selectedOption]);
-  
 
   return (
     <div className="dashboard-container">
@@ -41,7 +37,7 @@ const AirlineCredsDashboard = () => {
         <span className="toggle-label">
           {selectedOption === 'Airlines' ? 'Airlines' : 'Workspace'}
         </span>
-        <label className="toggle-switch">
+        <label className="switch">
           <input
             type="checkbox"
             checked={selectedOption === 'Workspace'}
@@ -61,25 +57,24 @@ const AirlineCredsDashboard = () => {
           </tr>
         </thead>
         <tbody>
-  {data.length > 0 ? (
-    data.map((item, index) => (
-      <tr key={index}>
-        <td>{item.name}</td>
-        <td>{item.pans}</td>
-        <td>{item.ActiveCredentials}</td>
-        <td>{item.invalidCredentials}</td>
-        <td>
-          <Link to="/details">View Details</Link>
-        </td>
-      </tr>
-    ))
-  ) : (
-    <tr>
-      <td colSpan="5">No data available</td>
-    </tr>
-  )}
-</tbody>
-
+          {data.length > 0 ? (
+            data.map((item, index) => (
+              <tr key={index}>
+                <td>{item.name}</td>
+                <td>{item.pans}</td>
+                <td>{item.ActiveCredentials}</td>
+                <td>{item.invalidCredentials}</td>
+                <td>
+                  <Link to="/details">View Details</Link>
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="5">No data available</td>
+            </tr>
+          )}
+        </tbody>
       </table>
     </div>
   );

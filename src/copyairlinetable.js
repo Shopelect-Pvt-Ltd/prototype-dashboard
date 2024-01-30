@@ -5,9 +5,14 @@ import '../css-importer';
 import EditAirline from './EditAirline';
 import Popup from './popup'; // Import the new Popup component
 import firebaseConfig from '../config/firebase'
+import axios from 'axios';  // Import Axios library
+import { useNavigate, createSearchParams } from 'react-router-dom';
+import { AgGridReact } from 'ag-grid-react';
+import 'ag-grid-community/styles/ag-grid.css';
+import 'ag-grid-community/styles/ag-theme-alpine.css';
 
 firebase.initializeApp(firebaseConfig);
-const firestore = firebase.firestore();
+const firestore = firebase.firestore(); 
 
 const AirlineTable = () => {
   const [selectedWorkspace, setSelectedWorkspace] = useState('');
@@ -23,6 +28,8 @@ const AirlineTable = () => {
     portal_pass: '',
   });
   const [isAddNewFormOpen, setIsAddNewFormOpen] = useState(false);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchWorkspaces = async () => {
@@ -74,15 +81,16 @@ const AirlineTable = () => {
     setEditIndex(null);
   };
 
-  const handleRun = (index) => {
-    // Define the logic for handling the "Run" button click
-    console.log(`Running action for item at index ${index}`);
-  };
+  const handleRun = async (index) => {
+    try {
+        const airlineData = tableData[index];
+        const response = await axios.post('https://lufthansa-fn-sk7dyq62iq-uc.a.run.app', airlineData);
+        console.log('API Response:', response.data);
+    } catch (error) {
+        console.error('Error making API request:', error);
+    }
+};
 
-  const handleLogs = (index) => {
-    // Define the logic for handling the "Logs" button click
-    console.log(`Viewing logs for item at index ${index}`);
-  };
   const handleEdit = (index) => {
     setEditIndex(index);
   };
@@ -111,6 +119,16 @@ const AirlineTable = () => {
       console.error('Error updating data in Firestore:', error);
     }
   };
+  const handleLogs = (airline, index) => {
+    console.log("Index", index, airline)
+    navigate({
+        pathname: `/logsList`,
+        search: `?${createSearchParams({
+            workspace: `${airline.workspace}`,
+            workspace_id: `${airline.id}`
+        })}`
+    });
+};
 
   const handleDelete = async (index) => {
     try {
@@ -181,6 +199,26 @@ const AirlineTable = () => {
 
     setIsAddNewFormOpen(false);
   };
+
+  const columnDefs = [
+    { headerName: 'Airline Name', field: 'airline_name' },
+    { headerName: 'Portal ID', field: 'portal_id' },
+    { headerName: 'Last Ran', field: 'last_ran' },
+    { headerName: 'Files Count', field: 'files_count' },
+    { headerName: 'Imap URL', field: 'imap_url' },
+    { headerName: 'Portal Pass', field: 'portal_pass' },
+    {
+      headerName: 'Actions',
+      cellRenderer: (params) => (
+        <div>
+          <button className="ag-icon-button" onClick={() => handleEdit(params.rowIndex)}>Edit</button>
+          <button className="ag-icon-button" onClick={() => handleDelete(params.rowIndex)}>Delete</button>
+          <button className="ag-icon-button" onClick={() => handleRun(params.rowIndex)}>Run</button>
+          <button className="ag-icon-button" onClick={() => handleLogs(params.data, params.rowIndex)}>Logs</button>
+        </div>
+      ),
+    },
+  ];
 
   return (
     <div>
@@ -261,40 +299,13 @@ const AirlineTable = () => {
       
 
       {selectedWorkspace && (
-        <div>
-          <button onClick={handleAddNewClick}>Add New</button>
-
-          <table>
-            <thead>
-              <tr>
-                <th>Airline Name</th>
-                <th>Portal ID</th>
-                <th>Last Ran</th>
-                <th>Files Count</th>
-                <th>Imap URL</th>
-                <th>Portal Pass</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {tableData.map((airline, index) => (
-                <tr key={index}>
-                  <td>{airline.airline_name}</td>
-                  <td>{airline.portal_id}</td>
-                  <td>{airline.last_ran}</td>
-                  <td>{airline.files_count}</td>
-                  <td>{airline.imap_url}</td>
-                  <td>{airline.portal_pass}</td>
-                  <td>
-                    <button onClick={() => handleEdit(index)}>Edit</button>
-                    <button onClick={() => handleDelete(index)}>Delete</button>
-                    <button onClick={() => handleRun(index)}>Run</button>
-                    <button onClick={() => handleLogs(index)}>Logs</button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="ag-theme-alpine" style={{ height: 500, width: '100%' }}>
+          <AgGridReact
+            animateRows={true} // Enable row animations
+            rowSelection="multiple" // Enable row selection
+            columnDefs={columnDefs}
+            rowData={tableData}>
+          </AgGridReact>
         </div>
       )}
     </div>

@@ -1,0 +1,56 @@
+.dashboard-container {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+  }
+  
+  .dashboard-container h1 {
+    margin-bottom: 20px;
+  }
+  
+  .dashboard-container label {
+    margin-right: 10px;
+  }
+  
+  .dashboard-container select {
+    padding: 5px;
+    font-size: 16px;
+  }
+  
+  .ag-theme-alpine {
+    height: 400px;
+    width: 100%;
+  }
+  
+  /* Customize the header row */
+  .ag-header {
+    background-color: #f0f0f0;
+    border-bottom: 1px solid #ccc;
+  }
+  
+  /* Customize the header cells */
+  .ag-header-cell {
+    border-right: 1px solid #ccc;
+    padding: 8px;
+    font-weight: bold;
+  }
+  
+  /* Customize the body cells */
+  .ag-cell {
+    padding: 8px;
+    border-bottom: 1px solid #ccc;
+  }
+  
+  /* Style for the action buttons */
+  .ActionRenderer button {
+    margin-right: 8px;
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    background-color: #f0f0f0;
+    color: #333;
+    cursor: pointer;
+  }
+  
+  .ActionRenderer button:hover {
+    background-color: #ddd;
+  }
+  

@@ -3,10 +3,13 @@ import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
 import '../css-importer';
 import EditAirline from './EditAirline';
-import Popup from './popup'; // Import the new Popup component
-import firebaseConfig from '../config/firebase'
-import axios from 'axios';  // Import Axios library
+import Popup from './popup'; // Import the Popup component
+import firebaseConfig from '../config/firebase';
+import axios from 'axios';
 import { useNavigate, createSearchParams } from 'react-router-dom';
+import { AgGridReact } from 'ag-grid-react';
+import 'ag-grid-community/styles/ag-grid.css';
+import 'ag-grid-community/styles/ag-theme-alpine.css';
 
 firebase.initializeApp(firebaseConfig);
 const firestore = firebase.firestore();
@@ -16,6 +19,8 @@ const AirlineTable = () => {
   const [workspaces, setWorkspaces] = useState([]);
   const [tableData, setTableData] = useState([]);
   const [editIndex, setEditIndex] = useState(null);
+  const [gridApi, setGridApi] = useState(null);
+  const [gridColumnApi, setGridColumnApi] = useState(null);
   const [newAirline, setNewAirline] = useState({
     airline_name: '',
     portal_id: '',
@@ -44,18 +49,6 @@ const AirlineTable = () => {
 
     fetchWorkspaces();
   }, []);
-
-  const handleLogs = (airline, index) => {
-    console.log("Index", index, airline)
-    navigate({
-      pathname: `/logsList`,
-      search: `?${createSearchParams({
-          workspace: `${airline.workspace}`,
-          workspace_id: `${airline.id}`
-      })}`
-  });
-    // navigate(`/logsList`);
-  };
 
   useEffect(() => {
     const fetchTableData = async () => {
@@ -92,29 +85,13 @@ const AirlineTable = () => {
 
   const handleRun = async (index) => {
     try {
-        const airlineData = tableData[index];
-
-        // const data = {
-        //     "airline_name": "lufthansa_swiss",
-        //     "code": "MB95",
-        //     "id": "ATohTaTcH3kLzMqRypDH",
-        //     "last_ran": "2023-12-29 16:17:17.153838",
-        //     "pan": "ABAFA5984C",
-        //     "portal_id": "Admin",
-        //     "portal_pass": "Acg@1234567",
-        //     "remarks": "No Error",
-        //     "run_days_interval": "7",
-        //     "verified": "No",
-        //     "workspace": "ACG"
-        // };
-
-        const response = await axios.post('https://lufthansa-fn-sk7dyq62iq-uc.a.run.app', airlineData);
-        console.log('API Response:', response.data);
+      const airlineData = tableData[index];
+      const response = await axios.post('https://lufthansa-fn-sk7dyq62iq-uc.a.run.app', airlineData);
+      console.log('API Response:', response.data);
     } catch (error) {
-        console.error('Error making API request:', error);
+      console.error('Error making API request:', error);
     }
-};
-
+  };
 
   const handleEdit = (index) => {
     setEditIndex(index);
@@ -143,6 +120,17 @@ const AirlineTable = () => {
     } catch (error) {
       console.error('Error updating data in Firestore:', error);
     }
+  };
+
+  const handleLogs = (airline, index) => {
+    console.log("Index", index, airline)
+    navigate({
+      pathname: `/logsList`,
+      search: `?${createSearchParams({
+        workspace: `${airline.workspace}`,
+        workspace_id: `${airline.id}`
+      })}`
+    });
   };
 
   const handleDelete = async (index) => {
@@ -215,6 +203,30 @@ const AirlineTable = () => {
     setIsAddNewFormOpen(false);
   };
 
+  const columnDefs = [
+    { headerName: 'Airline Name', field: 'airline_name' },
+    { headerName: 'Portal ID', field: 'portal_id' },
+    { headerName: 'Last Ran', field: 'last_ran' },
+    { headerName: 'Files Count', field: 'files_count' },
+    { headerName: 'Imap URL', field: 'imap_url' },
+    { headerName: 'Portal Pass', field: 'portal_pass' },
+    {
+      headerName: 'Actions',
+      cellRenderer: (params) => (
+        <div>
+          <button className="ag-icon-button" onClick={() => handleEdit(params.rowIndex)}>Edit</button>
+          <button className="ag-icon-button" onClick={() => handleDelete(params.rowIndex)}>Delete</button>
+          <button className="ag-icon-button" onClick={() => handleRun(params.rowIndex)}>Run</button>
+          <button className="ag-icon-button" onClick={() => handleLogs(params.data, params.rowIndex)}>Logs</button>
+        </div>
+      ),
+    },
+  ];
+
+  const onGridReady = (params) => {
+    setGridApi(params.api);
+    setGridColumnApi(params.columnApi);
+  };
   return (
     <div>
       <h1 style={{ textAlign: 'center' }}>Workspace Selector</h1>
@@ -227,7 +239,11 @@ const AirlineTable = () => {
           </option>
         ))}
       </select>
-
+  
+      {selectedWorkspace && ( // Render the "Add New" button only if a workspace is selected
+      <button onClick={handleAddNewClick}>Add New</button>
+    )}
+  
       {editIndex !== null && (
         <Popup onClose={handleCancelEdit}>
           <EditAirline
@@ -237,97 +253,73 @@ const AirlineTable = () => {
           />
         </Popup>
       )}
-
-        {isAddNewFormOpen && (
-              <Popup onClose={handleCancelNew}>
-                <div>
-                  <h2>Add New Airline</h2>
-                  <label>Airline Name:</label>
-                  <input
-                    type="text"
-                    name="airline_name"
-                    value={newAirline.airline_name}
-                    onChange={handleNewAirlineChange}
-                  />
-                  <label>Portal ID:</label>
-                  <input
-                    type="text"
-                    name="portal_id"
-                    value={newAirline.portal_id}
-                    onChange={handleNewAirlineChange}
-                  />
-                  <label>Last Ran:</label>
-                  <input
-                    type="text"
-                    name="last_ran"
-                    value={newAirline.last_ran}
-                    onChange={handleNewAirlineChange}
-                  />
-                  <label>Files Count:</label>
-                  <input
-                    type="text"
-                    name="files_count"
-                    value={newAirline.files_count}
-                    onChange={handleNewAirlineChange}
-                  />
-                  <label>Imap URL:</label>
-                  <input
-                    type="text"
-                    name="imap_url"
-                    value={newAirline.imap_url}
-                    onChange={handleNewAirlineChange}
-                  />
-                  <label>Portal Pass:</label>
-                  <input
-                    type="text"
-                    name="portal_pass"
-                    value={newAirline.portal_pass}
-                    onChange={handleNewAirlineChange}
-                  />
-                  <div>
-                    <button onClick={handleSaveNew}>Save</button>
-                    <button onClick={handleCancelNew}>Cancel</button>
-                  </div>
-                </div>
-              </Popup>
-            )}
-      
-
+  
+      {isAddNewFormOpen && (
+        <Popup onClose={handleCancelNew}>
+          <div className="popup-form">
+            <h2>Add New Airline</h2>
+            <label>Airline Name:</label>
+            <input
+              type="text"
+              name="airline_name"
+              value={newAirline.airline_name}
+              onChange={handleNewAirlineChange}
+            />
+            <label>Portal ID:</label>
+            <input
+              type="text"
+              name="portal_id"
+              value={newAirline.portal_id}
+              onChange={handleNewAirlineChange}
+            />
+            <label>Last Ran:</label>
+            <input
+              type="text"
+              name="last_ran"
+              value={newAirline.last_ran}
+              onChange={handleNewAirlineChange}
+            />
+            <label>Files Count:</label>
+            <input
+              type="text"
+              name="files_count"
+              value={newAirline.files_count}
+              onChange={handleNewAirlineChange}
+            />
+            <label>Imap URL:</label>
+            <input
+              type="text"
+              name="imap_url"
+              value={newAirline.imap_url}
+              onChange={handleNewAirlineChange}
+            />
+            <label>Portal Pass:</label>
+            <input
+              type="text"
+              name="portal_pass"
+              value={newAirline.portal_pass}
+              onChange={handleNewAirlineChange}
+            />
+            <div>
+              <button onClick={handleSaveNew}>Save</button>
+              <button onClick={handleCancelNew}>Cancel</button>
+            </div>
+          </div>
+        </Popup>
+      )}
+  
       {selectedWorkspace && (
-        <div>
-          <button onClick={handleAddNewClick}>Add New</button>
-
-          <table>
-            <thead>
-              <tr>
-                <th>Airline Name</th>
-                <th>Portal ID</th>
-                <th>Last Ran</th>
-                <th>Files Count</th>
-                <th>Imap URL</th>
-                <th>Portal Pass</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {tableData.map((airline, index) => (
-                <tr key={index}>
-                  <td>{airline.airline_name}</td>
-                  <td>{airline.portal_id}</td>
-                  <td>{airline.last_ran}</td>
-                  <td>{airline.files_count}</td>
-                  <td>{airline.imap_url}</td>
-                  <td>{airline.portal_pass}</td>
-                  <td>
-                    <button onClick={() => handleEdit(airline, index)}>Edit</button>
-                    <button onClick={() => handleDelete(airline, index)}>Delete</button>
-                    <button onClick={() => handleRun(airline, index)}>Run</button>
-                    <button onClick={() => handleLogs(airline,index)}>Logs</button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="ag-theme-alpine" style={{ height: 500, width: '100%' }}>
+          <AgGridReact
+            animateRows={true} // Enable row animations
+            rowSelection="multiple" // Enable row selection
+            onGridReady={onGridReady}
+            pagination={true}
+            paginationPageSize={10} // Adjust as per your requirement
+            domLayout='autoHeight'
+            columnDefs={columnDefs}
+            rowData={tableData}>
+          </AgGridReact>
         </div>
       )}
     </div>

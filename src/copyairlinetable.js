@@ -3,16 +3,16 @@ import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
 import '../css-importer';
 import EditAirline from './EditAirline';
-import Popup from './popup'; // Import the new Popup component
-import firebaseConfig from '../config/firebase'
-import axios from 'axios';  // Import Axios library
+import Popup from './popup';
+import firebaseConfig from '../config/firebase';
+import axios from 'axios';
 import { useNavigate, createSearchParams } from 'react-router-dom';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 
 firebase.initializeApp(firebaseConfig);
-const firestore = firebase.firestore(); 
+const firestore = firebase.firestore();
 
 const AirlineTable = () => {
   const [selectedWorkspace, setSelectedWorkspace] = useState('');
@@ -28,6 +28,13 @@ const AirlineTable = () => {
     portal_pass: '',
   });
   const [isAddNewFormOpen, setIsAddNewFormOpen] = useState(false);
+  const [isRowSelected, setIsRowSelected] = useState(false); // Track row selection
+  const [gridApi, setGridApi] = useState(null);
+  const [gridColumnApi, setGridColumnApi] = useState(null);
+  const [deleteConfirmationVisible, setDeleteConfirmationVisible] = useState(false);
+  const [deletingRowIndex, setDeletingRowIndex] = useState(null);
+  const [showProgressBar, setShowProgressBar] = useState(false); // Track progress bar visibility
+  const [showRunAllButton, setShowRunAllButton] = useState(false); // Track Run All button visibility
 
   const navigate = useNavigate();
 
@@ -54,18 +61,24 @@ const AirlineTable = () => {
         if (selectedWorkspace) {
           const credsRef = firestore.collection(`cred_ls/${selectedWorkspace}/creds`);
           const snapshot = await credsRef.get();
-
+  
           if (snapshot.empty) {
             console.warn('No data found for the selected workspace.');
             setTableData([]);
             return;
           }
-
+  
           const allTableData = snapshot.docs.map(doc => ({
             ...doc.data(),
             id: doc.id,
+            checked: false, // Checkbox state
           }));
-
+  
+          // Log the id and other data
+          allTableData.forEach(item => {
+            console.log('ID:', item.id, 'Other Data:', item); // Adjust to your data structure
+          });
+  
           setTableData(allTableData);
         }
       } catch (error) {
@@ -83,12 +96,42 @@ const AirlineTable = () => {
 
   const handleRun = async (index) => {
     try {
-        const airlineData = tableData[index];
-        const response = await axios.post('https://lufthansa-fn-sk7dyq62iq-uc.a.run.app', airlineData);
-        console.log('API Response:', response.data);
+      setShowProgressBar(true); // Show progress bar
+
+      const airlineData = tableData[index];
+      const response = await axios.post('https://lufthansa-fn-sk7dyq62iq-uc.a.run.app', airlineData);
+      console.log('API Response:', response.data);
+
+      // Hide progress bar
+      setShowProgressBar(false);
     } catch (error) {
-        console.error('Error making API request:', error);
+      console.error('Error making API request:', error);
+      setShowProgressBar(false); // Hide progress bar
     }
+  };
+
+// New function to handle running all selected rows and print their IDs
+const handleRunAll = async () => {
+  try {
+    setShowProgressBar(true); // Show progress bar
+
+    // Iterate through selected rows and execute the run operation for each
+    const selectedNodes = gridApi.getSelectedNodes();
+    for (const node of selectedNodes) {
+      const airlineData = node.data;
+      console.log('ID:', airlineData.id); // Print ID of selected row
+      console.log('Object:', airlineData); // Print ID of selected row
+      await axios.post('https://lufthansa-fn-sk7dyq62iq-uc.a.run.app', airlineData);
+    }
+
+    console.log('All selected rows have been processed.');
+
+    // Hide progress bar
+    setShowProgressBar(false);
+  } catch (error) {
+    console.error('Error running all selected rows:', error);
+    setShowProgressBar(false); // Hide progress bar
+  }
 };
 
   const handleEdit = (index) => {
@@ -119,30 +162,47 @@ const AirlineTable = () => {
       console.error('Error updating data in Firestore:', error);
     }
   };
+
   const handleLogs = (airline, index) => {
     console.log("Index", index, airline)
     navigate({
-        pathname: `/logsList`,
-        search: `?${createSearchParams({
-            workspace: `${airline.workspace}`,
-            workspace_id: `${airline.id}`
-        })}`
+      pathname: `/logsList`,
+      search: `?${createSearchParams({
+        workspace: `${airline.workspace}`,
+        workspace_id: `${airline.id}`
+
+      })}`
     });
-};
+  };
+
+  
 
   const handleDelete = async (index) => {
+    setDeletingRowIndex(index);
+    setDeleteConfirmationVisible(true);
+  };
+
+  const confirmDelete = async () => {
     try {
-      const airlineToDelete = tableData[index];
+      const airlineToDelete = tableData[deletingRowIndex];
       const panRef = firestore.collection(`cred_ls/${selectedWorkspace}/creds`);
       const airlineCredsRef = panRef.doc(airlineToDelete.id);
 
       await airlineCredsRef.delete();
 
-      const updatedTableData = tableData.filter((item, i) => i !== index);
+      const updatedTableData = tableData.filter((item, i) => i !== deletingRowIndex);
       setTableData(updatedTableData);
+
+      setDeleteConfirmationVisible(false);
+      setDeletingRowIndex(null);
     } catch (error) {
       console.error('Error deleting data from Firestore:', error);
     }
+  };
+
+  const cancelDelete = () => {
+    setDeleteConfirmationVisible(false);
+    setDeletingRowIndex(null);
   };
 
   const handleNewAirlineChange = (e) => {
@@ -167,6 +227,7 @@ const AirlineTable = () => {
       setNewAirline({
         ...newAirline,
         id: newAirlineDocRef.id,
+        checked: false, // Add checkbox state
       });
 
       const updatedTableData = [...tableData, newAirline];
@@ -200,7 +261,14 @@ const AirlineTable = () => {
     setIsAddNewFormOpen(false);
   };
 
+  const handleSelectionChanged = () => {
+    const selectedNodes = gridApi.getSelectedNodes();
+    setIsRowSelected(selectedNodes.length > 0);
+    setShowRunAllButton(selectedNodes.length > 1); // Show Run All button if more than one row is selected
+  };
+
   const columnDefs = [
+    { headerCheckboxSelection: isRowSelected, checkboxSelection: isRowSelected, width: 50 },
     { headerName: 'Airline Name', field: 'airline_name' },
     { headerName: 'Portal ID', field: 'portal_id' },
     { headerName: 'Last Ran', field: 'last_ran' },
@@ -220,6 +288,11 @@ const AirlineTable = () => {
     },
   ];
 
+  const onGridReady = (params) => {
+    setGridApi(params.api);
+    setGridColumnApi(params.columnApi);
+  };
+
   return (
     <div>
       <h1 style={{ textAlign: 'center' }}>Workspace Selector</h1>
@@ -233,6 +306,13 @@ const AirlineTable = () => {
         ))}
       </select>
 
+      {selectedWorkspace && (
+        <>
+          <button onClick={handleAddNewClick}>Add New</button>
+          {showRunAllButton && <button onClick={handleRunAll}>Run All</button>}
+        </>
+      )}
+
       {editIndex !== null && (
         <Popup onClose={handleCancelEdit}>
           <EditAirline
@@ -243,69 +323,93 @@ const AirlineTable = () => {
         </Popup>
       )}
 
-        {isAddNewFormOpen && (
-              <Popup onClose={handleCancelNew}>
-                <div>
-                  <h2>Add New Airline</h2>
-                  <label>Airline Name:</label>
-                  <input
-                    type="text"
-                    name="airline_name"
-                    value={newAirline.airline_name}
-                    onChange={handleNewAirlineChange}
-                  />
-                  <label>Portal ID:</label>
-                  <input
-                    type="text"
-                    name="portal_id"
-                    value={newAirline.portal_id}
-                    onChange={handleNewAirlineChange}
-                  />
-                  <label>Last Ran:</label>
-                  <input
-                    type="text"
-                    name="last_ran"
-                    value={newAirline.last_ran}
-                    onChange={handleNewAirlineChange}
-                  />
-                  <label>Files Count:</label>
-                  <input
-                    type="text"
-                    name="files_count"
-                    value={newAirline.files_count}
-                    onChange={handleNewAirlineChange}
-                  />
-                  <label>Imap URL:</label>
-                  <input
-                    type="text"
-                    name="imap_url"
-                    value={newAirline.imap_url}
-                    onChange={handleNewAirlineChange}
-                  />
-                  <label>Portal Pass:</label>
-                  <input
-                    type="text"
-                    name="portal_pass"
-                    value={newAirline.portal_pass}
-                    onChange={handleNewAirlineChange}
-                  />
-                  <div>
-                    <button onClick={handleSaveNew}>Save</button>
-                    <button onClick={handleCancelNew}>Cancel</button>
-                  </div>
-                </div>
-              </Popup>
-            )}
-      
+      {isAddNewFormOpen && (
+        <Popup onClose={handleCancelNew}>
+          <div className="popup-form">
+            <h2>Add New Airline</h2>
+            <label>Airline Name:</label>
+            <input
+              type="text"
+              name="airline_name"
+              value={newAirline.airline_name}
+              onChange={handleNewAirlineChange}
+            />
+            <label>Portal ID:</label>
+            <input
+              type="text"
+              name="portal_id"
+              value={newAirline.portal_id}
+              onChange={handleNewAirlineChange}
+            />
+            <label>Last Ran:</label>
+            <input
+              type="text"
+              name="last_ran"
+              value={newAirline.last_ran}
+              onChange={handleNewAirlineChange}
+            />
+            <label>Files Count:</label>
+            <input
+              type="text"
+              name="files_count"
+              value={newAirline.files_count}
+              onChange={handleNewAirlineChange}
+            />
+            <label>Imap URL:</label>
+            <input
+              type="text"
+              name="imap_url"
+              value={newAirline.imap_url}
+              onChange={handleNewAirlineChange}
+            />
+            <label>Portal Pass:</label>
+            <input
+              type="text"
+              name="portal_pass"
+              value={newAirline.portal_pass}
+              onChange={handleNewAirlineChange}
+            />
+            <div>
+              <button onClick={handleSaveNew}>Save</button>
+              <button onClick={handleCancelNew}>Cancel</button>
+            </div>
+          </div>
+        </Popup>
+      )}
+
+        {deleteConfirmationVisible && (
+        <div className="delete-content">
+          <h2>Confirm Deletion</h2>
+          <p>Are you sure you want to delete?</p>
+          <div>
+            <button onClick={confirmDelete}>Yes</button>
+            <button onClick={cancelDelete}>No</button>
+          </div>
+        </div>
+      )}
+
+      {showProgressBar && (
+        <div className="progress-popup" id="progressPopup">
+          <div className="progress-text" id="progressText">In Progress</div>
+          <div className="progress-bar">
+            <div className="progress-bar-inner"></div>
+          </div>
+        </div>
+      )}
 
       {selectedWorkspace && (
         <div className="ag-theme-alpine" style={{ height: 500, width: '100%' }}>
           <AgGridReact
-            animateRows={true} // Enable row animations
-            rowSelection="multiple" // Enable row selection
+            animateRows={true}
+            rowSelection="multiple"
+            onGridReady={onGridReady}
+            pagination={true}
+            paginationPageSize={10}
+            domLayout='autoHeight'
             columnDefs={columnDefs}
-            rowData={tableData}>
-          </AgGridReact>
+            rowData={tableData}
+            onSelectionChanged={handleSelectionChanged}
+          />
         </div>
       )}
     </div>
@@ -313,3 +417,5 @@ const AirlineTable = () => {
 };
 
 export default AirlineTable;
+
+

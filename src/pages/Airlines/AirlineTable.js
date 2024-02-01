@@ -3,7 +3,7 @@ import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
 import '../css-importer';
 import EditAirline from './EditAirline';
-import Popup from './popup'; // Import the Popup component
+import Popup from './popup';
 import firebaseConfig from '../config/firebase';
 import axios from 'axios';
 import { useNavigate, createSearchParams } from 'react-router-dom';
@@ -19,8 +19,6 @@ const AirlineTable = () => {
   const [workspaces, setWorkspaces] = useState([]);
   const [tableData, setTableData] = useState([]);
   const [editIndex, setEditIndex] = useState(null);
-  const [gridApi, setGridApi] = useState(null);
-  const [gridColumnApi, setGridColumnApi] = useState(null);
   const [newAirline, setNewAirline] = useState({
     airline_name: '',
     portal_id: '',
@@ -30,6 +28,13 @@ const AirlineTable = () => {
     portal_pass: '',
   });
   const [isAddNewFormOpen, setIsAddNewFormOpen] = useState(false);
+  const [isRowSelected, setIsRowSelected] = useState(false); // Track row selection
+  const [gridApi, setGridApi] = useState(null);
+  const [gridColumnApi, setGridColumnApi] = useState(null);
+  const [deleteConfirmationVisible, setDeleteConfirmationVisible] = useState(false);
+  const [deletingRowIndex, setDeletingRowIndex] = useState(null);
+  const [showProgressBar, setShowProgressBar] = useState(false); // Track progress bar visibility
+  const [showRunAllButton, setShowRunAllButton] = useState(false); // Track Run All button visibility
 
   const navigate = useNavigate();
 
@@ -56,18 +61,24 @@ const AirlineTable = () => {
         if (selectedWorkspace) {
           const credsRef = firestore.collection(`cred_ls/${selectedWorkspace}/creds`);
           const snapshot = await credsRef.get();
-
+  
           if (snapshot.empty) {
             console.warn('No data found for the selected workspace.');
             setTableData([]);
             return;
           }
-
+  
           const allTableData = snapshot.docs.map(doc => ({
             ...doc.data(),
             id: doc.id,
+            checked: false, // Checkbox state
           }));
-
+  
+          // Log the id and other data
+          allTableData.forEach(item => {
+            console.log('ID:', item.id, 'Other Data:', item); // Adjust to your data structure
+          });
+  
           setTableData(allTableData);
         }
       } catch (error) {
@@ -85,13 +96,43 @@ const AirlineTable = () => {
 
   const handleRun = async (index) => {
     try {
+      setShowProgressBar(true); // Show progress bar
+
       const airlineData = tableData[index];
       const response = await axios.post('https://lufthansa-fn-sk7dyq62iq-uc.a.run.app', airlineData);
       console.log('API Response:', response.data);
+
+      // Hide progress bar
+      setShowProgressBar(false);
     } catch (error) {
       console.error('Error making API request:', error);
+      setShowProgressBar(false); // Hide progress bar
     }
   };
+
+// New function to handle running all selected rows and print their IDs
+const handleRunAll = async () => {
+  try {
+    setShowProgressBar(true); // Show progress bar
+
+    // Iterate through selected rows and execute the run operation for each
+    const selectedNodes = gridApi.getSelectedNodes();
+    for (const node of selectedNodes) {
+      const airlineData = node.data;
+      console.log('ID:', airlineData.id); // Print ID of selected row
+      console.log('Object:', airlineData); // Print ID of selected row
+      await axios.post('https://lufthansa-fn-sk7dyq62iq-uc.a.run.app', airlineData);
+    }
+
+    console.log('All selected rows have been processed.');
+
+    // Hide progress bar
+    setShowProgressBar(false);
+  } catch (error) {
+    console.error('Error running all selected rows:', error);
+    setShowProgressBar(false); // Hide progress bar
+  }
+};
 
   const handleEdit = (index) => {
     setEditIndex(index);
@@ -129,23 +170,39 @@ const AirlineTable = () => {
       search: `?${createSearchParams({
         workspace: `${airline.workspace}`,
         workspace_id: `${airline.id}`
+
       })}`
     });
   };
 
+  
+
   const handleDelete = async (index) => {
+    setDeletingRowIndex(index);
+    setDeleteConfirmationVisible(true);
+  };
+
+  const confirmDelete = async () => {
     try {
-      const airlineToDelete = tableData[index];
+      const airlineToDelete = tableData[deletingRowIndex];
       const panRef = firestore.collection(`cred_ls/${selectedWorkspace}/creds`);
       const airlineCredsRef = panRef.doc(airlineToDelete.id);
 
       await airlineCredsRef.delete();
 
-      const updatedTableData = tableData.filter((item, i) => i !== index);
+      const updatedTableData = tableData.filter((item, i) => i !== deletingRowIndex);
       setTableData(updatedTableData);
+
+      setDeleteConfirmationVisible(false);
+      setDeletingRowIndex(null);
     } catch (error) {
       console.error('Error deleting data from Firestore:', error);
     }
+  };
+
+  const cancelDelete = () => {
+    setDeleteConfirmationVisible(false);
+    setDeletingRowIndex(null);
   };
 
   const handleNewAirlineChange = (e) => {
@@ -170,6 +227,7 @@ const AirlineTable = () => {
       setNewAirline({
         ...newAirline,
         id: newAirlineDocRef.id,
+        checked: false, // Add checkbox state
       });
 
       const updatedTableData = [...tableData, newAirline];
@@ -203,7 +261,14 @@ const AirlineTable = () => {
     setIsAddNewFormOpen(false);
   };
 
+  const handleSelectionChanged = () => {
+    const selectedNodes = gridApi.getSelectedNodes();
+    setIsRowSelected(selectedNodes.length > 0);
+    setShowRunAllButton(selectedNodes.length > 1); // Show Run All button if more than one row is selected
+  };
+
   const columnDefs = [
+    { headerCheckboxSelection: isRowSelected, checkboxSelection: isRowSelected, width: 50 },
     { headerName: 'Airline Name', field: 'airline_name' },
     { headerName: 'Portal ID', field: 'portal_id' },
     { headerName: 'Last Ran', field: 'last_ran' },
@@ -227,6 +292,7 @@ const AirlineTable = () => {
     setGridApi(params.api);
     setGridColumnApi(params.columnApi);
   };
+
   return (
     <div>
       <h1 style={{ textAlign: 'center' }}>Workspace Selector</h1>
@@ -239,11 +305,14 @@ const AirlineTable = () => {
           </option>
         ))}
       </select>
-  
-      {selectedWorkspace && ( // Render the "Add New" button only if a workspace is selected
-      <button onClick={handleAddNewClick}>Add New</button>
-    )}
-  
+
+      {selectedWorkspace && (
+        <>
+          <button onClick={handleAddNewClick}>Add New</button>
+          {showRunAllButton && <button onClick={handleRunAll}>Run All</button>}
+        </>
+      )}
+
       {editIndex !== null && (
         <Popup onClose={handleCancelEdit}>
           <EditAirline
@@ -253,7 +322,7 @@ const AirlineTable = () => {
           />
         </Popup>
       )}
-  
+
       {isAddNewFormOpen && (
         <Popup onClose={handleCancelNew}>
           <div className="popup-form">
@@ -307,19 +376,40 @@ const AirlineTable = () => {
           </div>
         </Popup>
       )}
-  
+
+        {deleteConfirmationVisible && (
+        <div className="delete-content">
+          <h2>Confirm Deletion</h2>
+          <p>Are you sure you want to delete?</p>
+          <div>
+            <button onClick={confirmDelete}>Yes</button>
+            <button onClick={cancelDelete}>No</button>
+          </div>
+        </div>
+      )}
+
+      {showProgressBar && (
+        <div className="progress-popup" id="progressPopup">
+          <div className="progress-text" id="progressText">In Progress</div>
+          <div className="progress-bar">
+            <div className="progress-bar-inner"></div>
+          </div>
+        </div>
+      )}
+
       {selectedWorkspace && (
         <div className="ag-theme-alpine" style={{ height: 500, width: '100%' }}>
           <AgGridReact
-            animateRows={true} // Enable row animations
-            rowSelection="multiple" // Enable row selection
+            animateRows={true}
+            rowSelection="multiple"
             onGridReady={onGridReady}
             pagination={true}
-            paginationPageSize={10} // Adjust as per your requirement
+            paginationPageSize={10}
             domLayout='autoHeight'
             columnDefs={columnDefs}
-            rowData={tableData}>
-          </AgGridReact>
+            rowData={tableData}
+            onSelectionChanged={handleSelectionChanged}
+          />
         </div>
       )}
     </div>
@@ -327,3 +417,5 @@ const AirlineTable = () => {
 };
 
 export default AirlineTable;
+
+

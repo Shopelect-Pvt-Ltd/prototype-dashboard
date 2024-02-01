@@ -291,9 +291,11 @@ const AirlineTable = () => {
   };
 
   const handleSelectionChanged = () => {
-    const selectedNodes = gridApi.getSelectedNodes();
-    setIsRowSelected(selectedNodes.length > 0);
-    setShowRunAllButton(selectedNodes.length > 1); // Show Run All button if more than one row is selected
+    if (gridApi && gridColumnApi?.getSelectedNodes) {
+      const selectedNodes = gridApi.getSelectedNodes();
+      setIsRowSelected(selectedNodes.length > 0);
+      setShowRunAllButton(selectedNodes.length > 1); // Show Run All button if more than one row is selected
+    }
   };
 
   const columnDefs = [
@@ -320,10 +322,10 @@ const AirlineTable = () => {
   ];
 
   const onGridReady = (params) => {
-    
     setGridApi(params.api);
     setGridColumnApi(params.columnApi);
   };
+  
 
   return (
     <div>
@@ -426,15 +428,17 @@ const AirlineTable = () => {
               </>
             )}
 
-      {showProgressBar && (
-        <div className="progress-popup" id="progressPopup">
-          <div className="progress-text" id="progressText">{progressBarText}</div>
-          <div className="progress-bar">
-            <div className="progress-bar-inner"></div>
-            <div className="running-bar"></div>
-          </div>
-        </div>
-      )}
+          {showProgressBar && (
+            <div className="progress-overlay"> {/* Add progress overlay */}
+              <div className="progress-popup" id="progressPopup">
+                <div className="progress-text" id="progressText">{progressBarText}</div>
+                <div className="progress-bar">
+                  <div className="progress-bar-inner"></div>
+                  <div className="running-bar"></div>
+                </div>
+              </div>
+            </div>
+          )}
 
       {showSavedPopup && <div className="popup">Saved</div>}
 

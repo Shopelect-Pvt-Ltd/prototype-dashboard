@@ -168,7 +168,7 @@ button {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black overlay */
+  background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent black overlay */
   z-index: 9997; /* Ensure the overlay is below the .delete element */
 }
 
@@ -232,37 +232,49 @@ button {
 
 
 /* Progress Popup */
+
+
+
+.progress-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent black background */
+  z-index: 999; /* Place it beneath the progress popup */
+}
+
 .progress-popup {
   position: fixed;
   top: 50%;
   left: 50%;
-  width: 20%;
-  height: 10%;
   transform: translate(-50%, -50%);
-  /* background-color: rgba(152, 207, 232, 0.9); */
-  padding: 80px;
+  width: 30%;
+  height: 10%;
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 20px; /* Adjusted padding for better display */
   border-radius: 10px;
-  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.8);
+  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.8); /* Box shadow effect */
   z-index: 1000; /* Ensure the pop-up stays on top */
-  backdrop-filter: blur(2px); /* Apply blur effect to the background */
 }
-
-/* Progress Bar */
-
 
 /* Progress Text */
 .progress-text {
   text-align: center;
-  margin-top: 30px;
-  font-weight: bolder;
-  font-size: 24px; /* Adjust the font size as needed */
+  margin-top: 10px; /* Adjusted margin for better display */
+  font-weight: bold; /* 'bolder' is invalid value, corrected to 'bold' */
+  font-size: 18px; /* Adjust the font size as needed */
 }
+
+/* Progress Bar */
 .running-bar {
   height: 20%;
-  background-color: #c7d3ed; /* Orange color for running bar */
+  background-color: #a4baeb; /* Orange color for running bar */
   position: absolute;
   top: 0;
   left: 0;
+  width: 0%; /* Initial width set to 0% */
   animation: runningAnimation 5s linear infinite; /* Adjust duration as needed */
 }
 
@@ -274,6 +286,7 @@ button {
     width: 100%;
   }
 }
+
 
 
 

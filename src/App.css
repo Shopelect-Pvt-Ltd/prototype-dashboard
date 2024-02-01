@@ -66,7 +66,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent background */
+  background-color: rgba(5, 5, 5, 0.8); /* Semi-transparent background */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -138,7 +138,7 @@ tr:nth-child(even) {
 
 /* Style for action button */
 button {
-  background-color: #4caf50;
+  background-color: #4c93af;
   color: white;
   border: none;
   padding: 4px 8px;
@@ -147,39 +147,70 @@ button {
   transition: background-color 0.3s;
 }
 
+.run-button {
+  /* Normal color */
+  background-color: #4c93af;
+  color: white;
+}
+
+.run-button-disabled {
+  /* Disabled color */
+  background-color: lightgray;
+  color: gray;
+}
 
 
 
-.delete-content {
+
+.delete-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black overlay */
+  z-index: 9997; /* Ensure the overlay is below the .delete element */
+}
+
+.delete-overlay::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1; /* Place the overlay behind other content */
+}
+
+.delete {
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   width: 300px; /* Adjust width as needed */
-  height: 300px; /* Same as width for a square box */
   background-color: white;
   padding: 20px;
-  border-radius: 10px; /* Half of width/height to make it circular */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(235, 6, 6, 0.8);
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  z-index: 9999;
+  z-index: 9998; /* Ensure the delete element is above the overlay */
 }
 
-.delete-content h2 {
+.delete h2 {
   margin-top: 0;
   margin-bottom: 20px;
 }
 
-.delete-content p {
+.delete p {
   margin-bottom: 20px;
 }
 
-.delete-content button {
-  padding: 12px 20px; /* Adjust padding as needed */
-  margin-right: 10px; /* Add margin between buttons */
+.delete button {
+  padding: 12px 20px;
+  margin-right: 10px;
   background-color: #007bff;
   color: white;
   border: none;
@@ -187,13 +218,14 @@ button {
   cursor: pointer;
 }
 
-.delete-content button:last-child {
-  margin-right: 0; /* Remove margin from the last button */
+.delete button:last-child {
+  margin-right: 0;
 }
 
-.delete-content button:hover {
+.delete button:hover {
   background-color: #0056b3;
 }
+
 
 
 
@@ -216,27 +248,61 @@ button {
 }
 
 /* Progress Bar */
-.progress-bar {
-  width: 100%;
-  height: 20px;
-  background-color: #539cf0;
-  border-radius: 5px;
-  margin-top: 10px;
-}
 
-/* Progress Bar Inner Filler */
-.progress-bar-inner {
-  height: 100%;
-  width: 70%;
-  background-color: #6db0e2; /* Green color for progress */
-  border-radius: 5px;
-  transition: width 0.2s ease-in; /* Smooth transition animation */
-}
 
 /* Progress Text */
 .progress-text {
   text-align: center;
-  margin-top: 10px;
+  margin-top: 30px;
   font-weight: bolder;
+  font-size: 24px; /* Adjust the font size as needed */
+}
+.running-bar {
+  height: 20%;
+  background-color: #c7d3ed; /* Orange color for running bar */
+  position: absolute;
+  top: 0;
+  left: 0;
+  animation: runningAnimation 5s linear infinite; /* Adjust duration as needed */
 }
 
+@keyframes runningAnimation {
+  0% {
+    width: 0%;
+  }
+  100% {
+    width: 100%;
+  }
+}
+
+
+
+
+
+.popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 20px 40px; /* Increase padding for larger size */
+  border-radius: 10px;
+  z-index: 9999;
+  font-size: 20px; /* Increase font size for larger text */
+  display: inline-block;
+}
+
+/* You can add animation effects for better user experience */
+.popup {
+  animation: fadeInOut 3s ease;
+}
+
+@keyframes fadeInOut {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}

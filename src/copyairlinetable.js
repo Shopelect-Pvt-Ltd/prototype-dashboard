@@ -35,6 +35,9 @@ const AirlineTable = () => {
   const [deletingRowIndex, setDeletingRowIndex] = useState(null);
   const [showProgressBar, setShowProgressBar] = useState(false); // Track progress bar visibility
   const [showRunAllButton, setShowRunAllButton] = useState(false); // Track Run All button visibility
+  const [isRunButtonDisabled, setIsRunButtonDisabled] = useState(false); // Track Run button disabled state
+  const [progressBarText, setProgressBarText] = useState('In Progress'); // Track progress bar text
+  const [showSavedPopup, setShowSavedPopup] = useState(false); // Track saved pop-up visibility
 
   const navigate = useNavigate();
 
@@ -96,46 +99,64 @@ const AirlineTable = () => {
 
   const handleRun = async (index) => {
     try {
+      setIsRunButtonDisabled(true); // Disable the Run button
+      setProgressBarText('In Progress'); // Set progress bar text to "In Progress"
       setShowProgressBar(true); // Show progress bar
-
+  
       const airlineData = tableData[index];
       const response = await axios.post('https://lufthansa-fn-sk7dyq62iq-uc.a.run.app', airlineData);
       console.log('API Response:', response.data);
-
-      // Hide progress bar
-      setShowProgressBar(false);
+  
+      // Update progress bar text to "Completed"
+      setProgressBarText('Completed');
+      // Close the popup after 2 seconds when it shows "Completed"
+      setTimeout(() => {
+        setShowProgressBar(false);
+      }, 2000);
     } catch (error) {
       console.error('Error making API request:', error);
-      setShowProgressBar(false); // Hide progress bar
+    } finally {
+      setIsRunButtonDisabled(false); // Enable the Run button
+      // No need to hide the progress bar here
     }
   };
-
-// New function to handle running all selected rows and print their IDs
-const handleRunAll = async () => {
-  try {
-    setShowProgressBar(true); // Show progress bar
-
-    // Iterate through selected rows and execute the run operation for each
-    const selectedNodes = gridApi.getSelectedNodes();
-    for (const node of selectedNodes) {
-      const airlineData = node.data;
-      console.log('ID:', airlineData.id); // Print ID of selected row
-      console.log('Object:', airlineData); // Print ID of selected row
-      await axios.post('https://lufthansa-fn-sk7dyq62iq-uc.a.run.app', airlineData);
+  
+  // New function to handle running all selected rows and print their IDs
+  const handleRunAll = async () => {
+    try {
+      setIsRunButtonDisabled(true); // Disable the Run button
+      setProgressBarText('In Progress'); // Set progress bar text to "In Progress"
+      setShowProgressBar(true); // Show progress bar
+  
+      // Iterate through selected rows and execute the run operation for each
+      const selectedNodes = gridApi.getSelectedNodes();
+      for (const node of selectedNodes) {
+        const airlineData = node.data;
+        console.log('ID:', airlineData.id); // Print ID of selected row
+        console.log('Object:', airlineData); // Print ID of selected row
+        await axios.post('https://lufthansa-fn-sk7dyq62iq-uc.a.run.app', airlineData);
+      }
+  
+      console.log('All selected rows have been processed.');
+  
+      // Update progress bar text to "Completed"
+      setProgressBarText('Completed');
+      // Close the popup after 2 seconds when it shows "Completed"
+      setTimeout(() => {
+        setShowProgressBar(false);
+      }, 2000);
+    } catch (error) {
+      console.error('Error running all selected rows:', error);
+    } finally {
+      setIsRunButtonDisabled(false); // Enable the Run button
+      // No need to hide the progress bar here
     }
-
-    console.log('All selected rows have been processed.');
-
-    // Hide progress bar
-    setShowProgressBar(false);
-  } catch (error) {
-    console.error('Error running all selected rows:', error);
-    setShowProgressBar(false); // Hide progress bar
-  }
-};
+  };
+  
 
   const handleEdit = (index) => {
     setEditIndex(index);
+    setIsRowSelected(true);
   };
 
   const handleCancelEdit = () => {
@@ -158,6 +179,8 @@ const handleRunAll = async () => {
       setTableData(updatedTableData);
 
       setEditIndex(null);
+      setShowSavedPopup(true); // Show the saved pop-up
+      setTimeout(() => setShowSavedPopup(false), 3000); // Hide the pop-up after 3 seconds
     } catch (error) {
       console.error('Error updating data in Firestore:', error);
     }
@@ -243,6 +266,8 @@ const handleRunAll = async () => {
       });
 
       setIsAddNewFormOpen(false);
+      setShowSavedPopup(true); // Show the saved pop-up
+      setTimeout(() => setShowSavedPopup(false), 3000); // Hide the pop-up after 3 seconds
     } catch (error) {
       console.error('Error adding new data:', error);
     }
@@ -275,13 +300,15 @@ const handleRunAll = async () => {
     { headerName: 'Files Count', field: 'files_count' },
     { headerName: 'Imap URL', field: 'imap_url' },
     { headerName: 'Portal Pass', field: 'portal_pass' },
+    { headerName: 'Status', field: 'status' }, // New Status column
     {
       headerName: 'Actions',
       cellRenderer: (params) => (
         <div>
           <button className="ag-icon-button" onClick={() => handleEdit(params.rowIndex)}>Edit</button>
           <button className="ag-icon-button" onClick={() => handleDelete(params.rowIndex)}>Delete</button>
-          <button className="ag-icon-button" onClick={() => handleRun(params.rowIndex)}>Run</button>
+          {/* <button className="ag-icon-button" onClick={() => handleRun(params.rowIndex)} disabled={isRunButtonDisabled}>Run</button> */}
+          <button className={`ag-icon-button ${isRunButtonDisabled ? 'run-button-disabled' : 'run-button'}`} onClick={() => handleRun(params.rowIndex)} disabled={isRunButtonDisabled}> Run </button>
           <button className="ag-icon-button" onClick={() => handleLogs(params.data, params.rowIndex)}>Logs</button>
         </div>
       ),
@@ -289,6 +316,7 @@ const handleRunAll = async () => {
   ];
 
   const onGridReady = (params) => {
+    
     setGridApi(params.api);
     setGridColumnApi(params.columnApi);
   };
@@ -377,25 +405,34 @@ const handleRunAll = async () => {
         </Popup>
       )}
 
-        {deleteConfirmationVisible && (
-        <div className="delete-content">
-          <h2>Confirm Deletion</h2>
-          <p>Are you sure you want to delete?</p>
-          <div>
-            <button onClick={confirmDelete}>Yes</button>
-            <button onClick={cancelDelete}>No</button>
+      {deleteConfirmationVisible && (
+              <>
+                {/* Overlay */}
+                <div className="delete-overlay"></div>
+
+                {/* Delete confirmation popup */}
+                <div className="delete">
+                  <h2>Confirm Deletion</h2>
+                  <p>Are you sure you want to delete?</p>
+                  <div>
+                    <button onClick={confirmDelete}>Yes</button>
+                    <button onClick={cancelDelete}>No</button>
+                  </div>
+                </div>
+              </>
+            )}
+
+      {showProgressBar && (
+        <div className="progress-popup" id="progressPopup">
+          <div className="progress-text" id="progressText">{progressBarText}</div>
+          <div className="progress-bar">
+            <div className="progress-bar-inner"></div>
+            <div className="running-bar"></div>
           </div>
         </div>
       )}
 
-      {showProgressBar && (
-        <div className="progress-popup" id="progressPopup">
-          <div className="progress-text" id="progressText">In Progress</div>
-          <div className="progress-bar">
-            <div className="progress-bar-inner"></div>
-          </div>
-        </div>
-      )}
+      {showSavedPopup && <div className="popup">Saved</div>}
 
       {selectedWorkspace && (
         <div className="ag-theme-alpine" style={{ height: 500, width: '100%' }}>
@@ -417,5 +454,3 @@ const handleRunAll = async () => {
 };
 
 export default AirlineTable;
-
-

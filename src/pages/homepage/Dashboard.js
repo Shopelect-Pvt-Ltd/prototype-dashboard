@@ -13,7 +13,7 @@ const Dashboard = () => {
         <Row title="Scrapper Dashboard" path="/scraperDashboard" />
         <Row title="Airline Credential Dashboard" path="/Airlinedashboard" />
         <Row title="GST Credential Dashboard" path="/gstdashboard" />
-        <Row title="GST Credential Table" path="/gsttable" />
+        <Row title="GST Credential Table" path="/GSTTableCopy" />
         <Row title="Airline Credentials Table" path="/AirlineTable" />
       </div>
     </div>

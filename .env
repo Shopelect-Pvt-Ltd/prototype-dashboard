@@ -1,0 +1,5 @@
+POSTGRES_HOST = "postgres-v1-dbs-do-user-13186796-0.b.db.ondigitalocean.com"
+POSTGRES_PORT = "25060"
+POSTGRES_DB = "airlines_db"
+POSTGRES_USER = "airlinedb_user"
+POSTGRES_PASS = "AVNS_SFBbzpFCBpvhgbI5M1T"

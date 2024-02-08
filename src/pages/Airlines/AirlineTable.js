@@ -6,11 +6,10 @@ import EditAirline from './EditAirline';
 import Popup from './popup';
 import firebaseConfig from '../config/firebase';
 import axios from 'axios';
-import { useNavigate, createSearchParams } from 'react-router-dom';
+import { useNavigate, createSearchParams, useLocation } from 'react-router-dom';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
-
 
 firebase.initializeApp(firebaseConfig);
 const firestore = firebase.firestore();
@@ -31,7 +30,6 @@ const AirlineTable = () => {
   const [isAddNewFormOpen, setIsAddNewFormOpen] = useState(false);
   const [isRowSelected, setIsRowSelected] = useState(false); // Track row selection
   const [gridApi, setGridApi] = useState(null);
-  const [gridColumnApi, setGridColumnApi] = useState(null);
   const [deleteConfirmationVisible, setDeleteConfirmationVisible] = useState(false);
   const [deletingRowIndex, setDeletingRowIndex] = useState(null);
   const [showProgressBar, setShowProgressBar] = useState(false); // Track progress bar visibility
@@ -41,10 +39,23 @@ const AirlineTable = () => {
   const [showSavedPopup, setShowSavedPopup] = useState(false); // Track saved pop-up visibility
   const [history, setHistory] = useState([]); // History of selected workspaces
   const [historyIndex, setHistoryIndex] = useState(-1); // Index of the current history entry
+  const [selectedRows, setSelectedRows] = useState([]); // Track selected rows
 
   const navigate = useNavigate();
 
+  const useQuery= () => {
+    return new URLSearchParams(useLocation().search);
+  }
+  let query = useQuery();
+
   useEffect(() => {
+    console.log("USE EFFECT CALLED -1")
+    console.log("asertgfd", query.get("workspace"))
+    if (query.get("workspace") != null || query.get("workspace") !== undefined )
+    {
+      setSelectedWorkspace(query.get("workspace"))
+    }
+
     const fetchWorkspaces = async () => {
       try {
         const snapshot = await firestore.collection('cred_ls').get();
@@ -62,6 +73,7 @@ const AirlineTable = () => {
   }, []);
 
   useEffect(() => {
+    console.log("USE EFFECT CALLED -2")
     const fetchTableData = async () => {
       try {
         if (selectedWorkspace) {
@@ -89,11 +101,21 @@ const AirlineTable = () => {
 
     fetchTableData();
   }, [selectedWorkspace]);
-
+  console.log("twerk ass bitch")
   const handleDropdownChange = (e) => {
     const { value } = e.target;
     setSelectedWorkspace(value);
+
+    navigate({
+      // pathname: `/logs`,
+      search: `?${createSearchParams({
+        workspace: `${value}`,
+      })}`
+    });
+
     setEditIndex(null);
+    // Update URL with new workspace parameter
+    // navigate(`/your-route-path/${value}`);
 
     // Update history when selecting a new workspace
     const newHistory = [...history.slice(0, historyIndex + 1), value];
@@ -102,35 +124,61 @@ const AirlineTable = () => {
   };
 
   const handleRun = async (index) => {
+    let airlineData;
+  
     try {
-      setIsRunButtonDisabled(true); // Disable the Run button
-      setProgressBarText('In Progress'); // Set progress bar text to "In Progress"
-      setShowProgressBar(true); // Show progress bar
+      setIsRunButtonDisabled(true);
+      setProgressBarText('In Progress');
+      setShowProgressBar(true);
   
-      const airlineData = tableData[index];
-      const response = await axios.post('https://lufthansa-fn-sk7dyq62iq-uc.a.run.app', airlineData);
-      console.log('API Response:', response.data);
+      airlineData = tableData[index];
+      const response = await Promise.race([
+        axios.post('https://lufthansa-fn-sk7dyq62iq-uc.a.run.app', airlineData),
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('API Timeout')), 45000)
+        ),
+      ]);
   
-      // Update progress bar text to "Completed"
+      if (response) {
+        console.log('API Response:', response.data);
+        const updatedAirlineData = { ...airlineData };
+        updatedAirlineData.Status = 'Active';
+        await firestore.collection(`cred_ls/${selectedWorkspace}/creds`).doc(airlineData.id).update({ Status: 'Active' });
+      } else {
+        console.error('API request timed out.');
+        const updatedAirlineData = { ...airlineData };
+        updatedAirlineData.Status = 'Not Active';
+        await firestore.collection(`cred_ls/${selectedWorkspace}/creds`).doc(airlineData.id).update({ Status: 'Not Active' });
+      }
+  
       setProgressBarText('Completed');
-      // Close the popup after 2 seconds when it shows "Completed"
-      setTimeout(() => {
-        setShowProgressBar(false);
-      }, 2000);
     } catch (error) {
       console.error('Error making API request:', error);
+      const updatedAirlineData = { ...airlineData };
+      updatedAirlineData.Status = 'Not Active';
+      await firestore.collection(`cred_ls/${selectedWorkspace}/creds`).doc(airlineData.id).update({ Status: 'Not Active' });
+      setProgressBarText('Invalid Credential'); // Update progress bar text
     } finally {
-      setIsRunButtonDisabled(false); // Enable the Run button
-      // No need to hide the progress bar here
+      setTimeout(() => {
+        setShowProgressBar(false); // Close progress bar pop-up after 2 seconds regardless of success or failure
+      }, 5000);
+      setIsRunButtonDisabled(false);
     }
   };
   
-  // New function to handle running all selected rows and print their IDs
   const handleRunAll = async () => {
     try {
       setIsRunButtonDisabled(true); // Disable the Run button
       setProgressBarText('In Progress'); // Set progress bar text to "In Progress"
       setShowProgressBar(true); // Show progress bar
+
+      // Show confirmation dialog before running all
+      const confirmed = window.confirm('Are you sure you want to run all selected rows?');
+      if (!confirmed) {
+        setIsRunButtonDisabled(false);
+        setShowProgressBar(false);
+        return;
+      }
   
       // Iterate through selected rows and execute the run operation for each
       const selectedNodes = gridApi.getSelectedNodes();
@@ -138,7 +186,13 @@ const AirlineTable = () => {
         const airlineData = node.data;
         console.log('ID:', airlineData.id); // Print ID of selected row
         console.log('Object:', airlineData); // Print ID of selected row
-        await axios.post('https://lufthansa-fn-sk7dyq62iq-uc.a.run.app', airlineData);
+  
+        // Similar logic as handleRun function to update "Status" field
+        const response = await axios.post('https://lufthansa-fn-sk7dyq62iq-uc.a.run.app', airlineData);
+        const updatedStatus = response ? 'Active' : 'Not Active';
+  
+        // Update Firestore document with the new "Status" field
+        await firestore.collection(`cred_ls/${selectedWorkspace}/creds`).doc(airlineData.id).update({ Status: updatedStatus });
       }
   
       console.log('All selected rows have been processed.');
@@ -156,11 +210,10 @@ const AirlineTable = () => {
       // No need to hide the progress bar here
     }
   };
-  
 
   const handleEdit = (index) => {
+    handleSelectionChanged();
     setEditIndex(index);
-    setIsRowSelected(true);
   };
 
   const handleCancelEdit = () => {
@@ -201,8 +254,6 @@ const AirlineTable = () => {
       })}`
     });
   };
-
-  
 
   const handleDelete = async (index) => {
     setDeletingRowIndex(index);
@@ -291,29 +342,31 @@ const AirlineTable = () => {
   };
 
   const handleSelectionChanged = () => {
-    if (gridApi && gridColumnApi?.getSelectedNodes) {
+    if (gridApi) {
       const selectedNodes = gridApi.getSelectedNodes();
+      const selectedData = selectedNodes.map(node => node.data);
+      setSelectedRows(selectedData);
       setIsRowSelected(selectedNodes.length > 0);
+      console.log('a', selectedNodes);
       setShowRunAllButton(selectedNodes.length > 1); // Show Run All button if more than one row is selected
     }
   };
 
   const columnDefs = [
-    { headerCheckboxSelection: isRowSelected, checkboxSelection: isRowSelected, width: 50 },
-    { headerName: 'Airline Name', field: 'airline_name' },
+    { headerCheckboxSelection: isRowSelected, checkboxSelection: isRowSelected, width: 50},
+    { headerName: 'Airline Name', field: 'airline_name'},
     { headerName: 'Portal ID', field: 'portal_id' },
     { headerName: 'Last Ran', field: 'last_ran' },
     { headerName: 'Files Count', field: 'files_count' },
     { headerName: 'Imap URL', field: 'imap_url' },
     { headerName: 'Portal Pass', field: 'portal_pass' },
-    { headerName: 'Status', field: 'Status' }, // New Status column
+    { headerName: 'Status', field: 'Status'}, // New Status column
     {
-      headerName: 'Actions',
+      headerName: 'Actions', colId: 'id',
       cellRenderer: (params) => (
         <div>
           <button className="ag-icon-button" onClick={() => handleEdit(params.rowIndex)}>Edit</button>
           <button className="ag-icon-button" onClick={() => handleDelete(params.rowIndex)}>Delete</button>
-          {/* <button className="ag-icon-button" onClick={() => handleRun(params.rowIndex)} disabled={isRunButtonDisabled}>Run</button> */}
           <button className={`ag-icon-button ${isRunButtonDisabled ? 'run-button-disabled' : 'run-button'}`} onClick={() => handleRun(params.rowIndex)} disabled={isRunButtonDisabled}> Run </button>
           <button className="ag-icon-button" onClick={() => handleLogs(params.data, params.rowIndex)}>Logs</button>
         </div>
@@ -323,7 +376,6 @@ const AirlineTable = () => {
 
   const onGridReady = (params) => {
     setGridApi(params.api);
-    setGridColumnApi(params.columnApi);
   };
   
 
@@ -454,6 +506,8 @@ const AirlineTable = () => {
             columnDefs={columnDefs}
             rowData={tableData}
             onSelectionChanged={handleSelectionChanged}
+            // onCellClicked={handleSelectionChanged}
+            // rowMultiSelectWithClick={true}
           />
         </div>
       )}

@@ -10,6 +10,8 @@ import AirlineTable from "./pages/Airlines/AirlineTable";
 import LogsPage from '../src/pages/Airlines/LogsPage';
 import LogsListPage from '../src/pages/Airlines/LogsList';
 import NavBar from '../src/navbar'; // Import your NavBar component
+import WorkspaceSelectionPage from "../src/pages/Airlines/WorkspaceSelectionPage"
+import GSTTableCopy from './pages/GST/GSTTablecopy';
 
 const App = () => {
   return (
@@ -38,10 +40,11 @@ const AppRoutes = () => {
         <Route path="/scraperDashboard" element={<ScraperDashboard />} />
         <Route path="/Airlinedashboard" element={<AirlineCredsDashboard />} />
         <Route path="/gstdashboard" element={<GSTDashboard />} />
-        <Route path="/gsttable" element={<GSTTable />} />
+        <Route path="/GSTTableCopy" element={<GSTTableCopy />} />
         <Route path="/AirlineTable" element={<AirlineTable />} />
         <Route path="/logs" element={<LogsPage />} />
         <Route path="/logslist" element={<LogsListPage />} />
+        <Route path="/SelectWorkspace" element={<WorkspaceSelectionPage />} />
       </Routes>
     </>
   );

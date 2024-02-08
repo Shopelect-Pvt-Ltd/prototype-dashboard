@@ -29,7 +29,7 @@ const AirlineTable = () => {
     portal_pass: '',
   });
   const [isAddNewFormOpen, setIsAddNewFormOpen] = useState(false);
-  const [isRowSelected, setIsRowSelected] = useState(false); // Track row selection
+  const [isRowSelected, setIsRowSelected] = useState(true); // Track row selection
   const [gridApi, setGridApi] = useState(null);
   const [gridColumnApi, setGridColumnApi] = useState(null);
   const [deleteConfirmationVisible, setDeleteConfirmationVisible] = useState(false);
@@ -102,30 +102,48 @@ const AirlineTable = () => {
   };
 
   const handleRun = async (index) => {
+    let airlineData;
+  
     try {
-      setIsRunButtonDisabled(true); // Disable the Run button
-      setProgressBarText('In Progress'); // Set progress bar text to "In Progress"
-      setShowProgressBar(true); // Show progress bar
+      setIsRunButtonDisabled(true);
+      setProgressBarText('In Progress');
+      setShowProgressBar(true);
   
-      const airlineData = tableData[index];
-      const response = await axios.post('https://lufthansa-fn-sk7dyq62iq-uc.a.run.app', airlineData);
-      console.log('API Response:', response.data);
+      airlineData = tableData[index];
+      const response = await Promise.race([
+        axios.post('https://lufthansa-fn-sk7dyq62iq-uc.a.run.app', airlineData),
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('API Timeout')), 45000)
+        ),
+      ]);
   
-      // Update progress bar text to "Completed"
+      if (response) {
+        console.log('API Response:', response.data);
+        const updatedAirlineData = { ...airlineData };
+        updatedAirlineData.Status = 'Active';
+        await firestore.collection(`cred_ls/${selectedWorkspace}/creds`).doc(airlineData.id).update({ Status: 'Active' });
+      } else {
+        console.error('API request timed out.');
+        const updatedAirlineData = { ...airlineData };
+        updatedAirlineData.Status = 'Not Active';
+        await firestore.collection(`cred_ls/${selectedWorkspace}/creds`).doc(airlineData.id).update({ Status: 'Not Active' });
+      }
+  
       setProgressBarText('Completed');
-      // Close the popup after 2 seconds when it shows "Completed"
-      setTimeout(() => {
-        setShowProgressBar(false);
-      }, 2000);
     } catch (error) {
       console.error('Error making API request:', error);
+      const updatedAirlineData = { ...airlineData };
+      updatedAirlineData.Status = 'Not Active';
+      await firestore.collection(`cred_ls/${selectedWorkspace}/creds`).doc(airlineData.id).update({ Status: 'Not Active' });
+      setProgressBarText('Invalid Credential'); // Update progress bar text
     } finally {
-      setIsRunButtonDisabled(false); // Enable the Run button
-      // No need to hide the progress bar here
+      setTimeout(() => {
+        setShowProgressBar(false); // Close progress bar pop-up after 2 seconds regardless of success or failure
+      }, 5000);
+      setIsRunButtonDisabled(false);
     }
   };
   
-  // New function to handle running all selected rows and print their IDs
   const handleRunAll = async () => {
     try {
       setIsRunButtonDisabled(true); // Disable the Run button
@@ -138,7 +156,13 @@ const AirlineTable = () => {
         const airlineData = node.data;
         console.log('ID:', airlineData.id); // Print ID of selected row
         console.log('Object:', airlineData); // Print ID of selected row
-        await axios.post('https://lufthansa-fn-sk7dyq62iq-uc.a.run.app', airlineData);
+  
+        // Similar logic as handleRun function to update "Status" field
+        const response = await axios.post('https://lufthansa-fn-sk7dyq62iq-uc.a.run.app', airlineData);
+        const updatedStatus = response ? 'Active' : 'Not Active';
+  
+        // Update Firestore document with the new "Status" field
+        await firestore.collection(`cred_ls/${selectedWorkspace}/creds`).doc(airlineData.id).update({ Status: updatedStatus });
       }
   
       console.log('All selected rows have been processed.');
@@ -156,7 +180,6 @@ const AirlineTable = () => {
       // No need to hide the progress bar here
     }
   };
-  
 
   const handleEdit = (index) => {
     setEditIndex(index);
@@ -291,7 +314,7 @@ const AirlineTable = () => {
   };
 
   const handleSelectionChanged = () => {
-    if (gridApi && gridColumnApi?.getSelectedNodes) {
+    if (gridApi) {
       const selectedNodes = gridApi.getSelectedNodes();
       setIsRowSelected(selectedNodes.length > 0);
       setShowRunAllButton(selectedNodes.length > 1); // Show Run All button if more than one row is selected
@@ -454,6 +477,8 @@ const AirlineTable = () => {
             columnDefs={columnDefs}
             rowData={tableData}
             onSelectionChanged={handleSelectionChanged}
+            // onCellClicked={handleSelectionChanged}
+            // rowMultiSelectWithClick={true}
           />
         </div>
       )}

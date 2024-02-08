@@ -159,7 +159,7 @@ tr:nth-child(even) {
 
 /* Style for action button */
 button {
-  background-color: #4c93af;
+  background-color: #0056b3;
   color: white;
   border: none;
   padding: 4px 8px;
@@ -168,9 +168,15 @@ button {
   transition: background-color 0.3s;
 }
 
+.edit-button,
+.delete-button {
+    margin-right: 8px; /* Adjust the padding as per your requirement */
+    background-color: #0056b3;
+}
+
 .run-button {
   /* Normal color */
-  background-color: #4c93af;
+  background-color: #0056b3;
   color: white;
 }
 
@@ -342,6 +348,60 @@ button {
 }
 
 
+/* Side bar styling */
+.ag-theme-alpine .ag-side-bar {
+  background-color: #f4f4f4;
+  border-right: 1px solid #ccc;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Tool panel styling */
+.ag-theme-alpine .ag-side-bar .ag-side-bar-tabs {
+  background-color: #eaeaea;
+  border-bottom: 1px solid #ccc;
+}
+
+.ag-theme-alpine .ag-side-bar .ag-side-bar-tabs .ag-tab {
+  color: #333;
+}
+
+.ag-theme-alpine .ag-side-bar .ag-side-bar-tabs .ag-tab-selected {
+  background-color: #007bff;
+  color: #fff;
+}
+
+/* Filter panel styling */
+.ag-theme-alpine .ag-side-bar .ag-tool-panel {
+  padding: 10px;
+}
+
+.ag-theme-alpine .ag-side-bar .ag-tool-panel-wrapper {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.ag-theme-alpine .ag-side-bar .ag-filter-toolpanel-body-wrapper {
+  max-height: 300px; /* Adjust height as needed */
+  overflow-y: auto;
+}
+
+.ag-theme-alpine .ag-side-bar .ag-filter-filter {
+  margin-bottom: 10px;
+}
+
+.ag-theme-alpine .ag-side-bar .ag-filter-filter input {
+  width: 100%;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+}
+
+.ag-theme-alpine .ag-side-bar .ag-filter-filter input:focus {
+  outline: none;
+  border-color: #007bff;
+}
 
 
 

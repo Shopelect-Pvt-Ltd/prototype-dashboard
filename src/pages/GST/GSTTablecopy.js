@@ -1,145 +1,19 @@
-// import React, { useState, useEffect } from 'react';
-// import { AgGridReact } from 'ag-grid-react';
-// import 'ag-grid-community/styles/ag-grid.css';
-// import 'ag-grid-community/styles/ag-theme-alpine.css';
-// import axios from 'axios'; // Import Axios for HTTP requests
 
-
-// // Define ActionRenderer outside GSTTableCopy component
-// const ActionRenderer = ({ data, onEdit, onDelete }) => {
-//   const handleEdit = () => {
-//     onEdit(data);
-//   };
-
-//   const handleDelete = () => {
-//     onDelete(data);
-//   };
-
-//   return (
-//     <div>
-//       <button onClick={handleEdit}>Edit</button>
-//       <button onClick={handleDelete}>Delete</button>
-//     </div>
-//   );
-// };
-
-// const GSTTableCopy = () => {
-//     const [rowData, setRowData] = useState([]);
-//     const [gridApi, setGridApi] = useState(null);
-//     const [gridColumnApi, setGridColumnApi] = useState(null);
-  
-//     const fetchData = async () => {
-//       try {
-//         const response = await axios.get('http://127.0.0.1:5000/api/gstcreds');
-//         setRowData(response.data);
-//         console.log('Data fetched successfully:', response.data);
-//       } catch (error) {
-//         console.error('Error fetching data:', error);
-//       }
-//     };
-  
-//     useEffect(() => {
-//       fetchData();
-//     }, []); // Add axios as dependency to useEffect
-  
-//     const columnDefs = [
-//       { checkboxSelection: true, headerCheckboxSelection: true, width: 50 },
-//       { headerName: 'Client', field: 'business_name' },
-//       { headerName: 'GSTIN', field: 'gstin' },
-//       { headerName: 'Status', field: 'status' },
-//       { headerName: 'Password', field: 'password' },
-//       {
-//         headerName: 'Actions',
-//         cellRenderer: (params) => (
-//             <div>
-//             <button className="ag-icon-button" onClick={() => handleEdit(params.rowIndex)} style={{ marginRight: '8px' }}>Edit</button>
-//             <button className="ag-icon-button" onClick={() => handleDelete(params.rowIndex)}>Delete</button>
-//           </div>
-//         ),
-//       },
-//     ];
-  
-//     const onGridReady = (params) => {
-//       setGridApi(params.api);
-//       setGridColumnApi(params.columnApi);
-//     };
-  
-//     const handleEdit = async (data) => {
-//         try {
-//             await axios.put('http://127.0.0.1:5000/api/gstcreds', data);
-//             fetchData();
-//         } catch (error) {
-//             console.error('Error editing rows:', error);
-//         }
-//         };
-  
-//     const handleDelete = async (rowData) => {
-//         // Implement delete functionality here
-//         console.log('Deleting:', rowData);
-//         try {
-//           await axios.delete('http://127.0.0.1:5000/api/gstcreds', { data: rowData });
-//           fetchData(); // Assuming fetchData is defined in the same scope
-//         } catch (error) {
-//           console.error('Error deleting rows:', error);
-//         }
-//       };
-  
-//     const handleAddNew = async () => {
-//       const newRowData = { business_name: '', gstin: '', status: '', password: '' };
-//       try {
-//         await axios.post('http://127.0.0.1:5000/api/gstcreds', newRowData);
-//         fetchData(); // Call fetchData after adding new data
-//       } catch (error) {
-//         console.error('Error adding new row:', error);
-//       }
-//     };
-  
-//     return (
-//         <div className="dashboard-container" style={{ position: 'relative' }}>
-//           <h1>GST CREDENTIAL TABLE</h1>
-//           <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '10px' }}>
-//             <button onClick={handleAddNew} style={{ padding: '8px 16px', backgroundColor: '#007bff', color: '#ffffff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>ADD NEW</button>
-//           </div>
-//           <div className="ag-theme-alpine" style={{ height: 400, width: '100%' }}>
-//             <AgGridReact
-//             columnDefs={columnDefs}
-//             rowData={rowData}
-//             animateRows={true}
-//             rowSelection="multiple"
-//             onGridReady={onGridReady}
-//             pagination={true}
-//             paginationPageSize={10}
-//             paginationPageSizeOptions={[10, 20, 50]}
-//             domLayout='autoHeight'
-//             context={{
-//               onEdit: handleEdit,
-//               onDelete: handleDelete,
-//             }}
-//           />
-//         </div>
-//       </div>
-//     );
-//   };
-  
-//   export default GSTTableCopy;
-
-
-
-
-
-
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect , useMemo } from 'react';
 import { AgGridReact } from 'ag-grid-react';
-import 'ag-grid-community/styles/ag-grid.css';
-import 'ag-grid-community/styles/ag-theme-alpine.css';
+import 'ag-grid-enterprise/styles/ag-grid.css';
+import 'ag-grid-enterprise/styles/ag-theme-alpine.css';
 import axios from 'axios'; // Import Axios for HTTP requests
 import Popup from '../Airlines/popup'; // Import the Popup component
+import { SideBarDef } from 'ag-grid-enterprise';
+
 
 const GSTTableCopy = () => {
     const [rowData, setRowData] = useState([]);
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [showPopup, setShowPopup] = useState(false);
+    const gridStyle = useMemo(() => ({ height: '100%', width: '100%' }), []);
     const [popupData, setPopupData] = useState({
         client: '',
         gstin: '',
@@ -164,20 +38,36 @@ const GSTTableCopy = () => {
 
     const columnDefs = [
         { checkboxSelection: true, headerCheckboxSelection: true, width: 50 },
-        { headerName: 'Client', field: 'business_name' },
-        { headerName: 'GSTIN', field: 'gstin' },
-        { headerName: 'Status', field: 'status' },
-        { headerName: 'Password', field: 'password' },
+        { headerName: 'Client', field: 'business_name', filter: true ,sortable: true },
+        { headerName: 'GSTIN', field: 'gstin', filter: true ,sortable: true  },
+        { headerName: 'Status', field: 'status', filter: true ,sortable: true },
+        // { headerName: 'Password', field: 'password', filter: true },
+        { 
+            headerName: 'Password', 
+            field: 'password', 
+            filter: true,
+            cellRenderer: (params) => (
+                <span>{'*'.repeat(params.value.length)}</span>
+            ),
+        },
         {
             headerName: 'Actions',
             cellRenderer: (params) => (
                 <div>
-                    <button className="ag-icon-button" onClick={() => handleEdit(params.data)}>Edit</button>
-                    <button className="ag-icon-button" onClick={() => handleDelete(params.data)}>Delete</button>
+                    <button className="ag-icon-button edit-button" onClick={() => handleEdit(params.data)}>Edit</button>
+                    <button className="ag-icon-button delete-button" onClick={() => handleDelete(params.data)}>Delete</button>
                 </div>
             ),
         },
     ];
+
+    const defaultColDef = useMemo(() => {
+        return {
+          editable: true,
+          filter: true,
+        };
+      }, []);
+
 
     const onGridReady = (params) => {
         setGridApi(params.api);
@@ -226,12 +116,13 @@ const GSTTableCopy = () => {
             console.error('Error adding new row:', error);
         }
     };
+    
 
     return (
         <div className="dashboard-container" style={{ position: 'relative' }}>
           <h1>GST CREDENTIAL TABLE</h1>
           <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '10px' }}>
-            <button onClick={handleAddNew} style={{ padding: '8px 16px', backgroundColor: '#007bff', color: '#ffffff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>ADD NEW</button>
+            <button onClick={handleAddNew} style={{ padding: '8px 16px', backgroundColor: '#0056b3', color: '#ffffff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>ADD NEW</button>
           </div>
           {showPopup && (
             <Popup>
@@ -260,21 +151,50 @@ const GSTTableCopy = () => {
                 </div>
             </Popup>
             )}
-          <div className="ag-theme-alpine" style={{ height: 400, width: '100%' }}>
-            <AgGridReact
-              columnDefs={columnDefs}
-              rowData={rowData}
-              animateRows={true}
-              rowSelection="multiple"
-              onGridReady={onGridReady}
-              pagination={true}
-              paginationPageSize={10}
-              paginationPageSizeOptions={[10, 20, 50]}
-              domLayout='autoHeight'
-            />
+          <div className="ag-theme-alpine" style={{ height: '100%', width: '100%' }}>
+          <AgGridReact
+            columnDefs={columnDefs}
+            rowData={rowData}
+            animateRows={true}
+            rowSelection="multiple"
+            onGridReady={onGridReady}
+            pagination={true}
+            paginationPageSize={10}
+            paginationPageSizeOptions={[10, 20, 50]}
+            domLayout='autoHeight'
+            sideBar={{
+                toolPanels: [
+                    {
+                        id: 'filters',
+                        labelDefault: 'Filters',
+                        labelKey: 'filters',
+                        iconKey: 'filter',
+                        toolPanel: 'agFiltersToolPanel',
+                        toolPanelParams: {
+                            suppressFilterSearch: true,
+                            debounceMs: 200
+                        }
+                    },
+                    {
+                        id: 'columns',
+                        labelDefault: 'Columns',
+                        labelKey: 'columns',
+                        iconKey: 'columns',
+                        toolPanel: 'agColumnsToolPanel',
+                        minWidth: 225,
+                        maxWidth: 225,
+                        width: 225
+                    },
+                ],
+                defaultToolPanel: 'filters',
+                position: 'right', // Specify the position of the side column toolbar
+                width: 300 // Specify the width of the side column toolbar
+            }}
+            style={{ width: '100%', height: '100%' }} // Adjusted styles
+        />
           </div>
         </div>
       );
     };
     
-    export default GSTTableCopy;
+export default GSTTableCopy;

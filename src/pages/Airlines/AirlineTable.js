@@ -101,7 +101,6 @@ const AirlineTable = () => {
 
     fetchTableData();
   }, [selectedWorkspace]);
-  console.log("twerk ass bitch")
   const handleDropdownChange = (e) => {
     const { value } = e.target;
     setSelectedWorkspace(value);

@@ -5,6 +5,8 @@ import 'ag-grid-enterprise/styles/ag-grid.css';
 import 'ag-grid-enterprise/styles/ag-theme-alpine.css';
 import axios from 'axios'; // Import Axios for HTTP requests
 import Popup from '../Airlines/popup'; // Import the Popup component
+
+import MyFilter from './MyFilter'
 import { SideBarDef } from 'ag-grid-enterprise';
 
 
@@ -38,9 +40,9 @@ const GSTTableCopy = () => {
 
     const columnDefs = [
         { checkboxSelection: true, headerCheckboxSelection: true, width: 50 },
-        { headerName: 'Client', field: 'business_name', filter: true ,sortable: true },
-        { headerName: 'GSTIN', field: 'gstin', filter: true ,sortable: true  },
-        { headerName: 'Status', field: 'status', filter: true ,sortable: true },
+        { headerName: 'Client', field: 'business_name',filter: 'agTextColumnFilter', floatingFilterComponent: 'MyFilter' ,floatingFilter:true },
+        { headerName: 'GSTIN', field: 'gstin',filter: 'agTextColumnFilter', floatingFilterComponent: 'MyFilter',floatingFilter:true },
+        { headerName: 'Status', field: 'status', filter: 'agTextColumnFilter', floatingFilterComponent: 'MyFilter',floatingFilter:true  },
         // { headerName: 'Password', field: 'password', filter: true },
         { 
             headerName: 'Password', 
@@ -116,6 +118,8 @@ const GSTTableCopy = () => {
             console.error('Error adding new row:', error);
         }
     };
+
+
     
 
     return (
@@ -162,6 +166,7 @@ const GSTTableCopy = () => {
             paginationPageSize={10}
             paginationPageSizeOptions={[10, 20, 50]}
             domLayout='autoHeight'
+            frameworkComponents={{ MyFilter: MyFilter }} // Correct the name here
             sideBar={{
                 toolPanels: [
                     {

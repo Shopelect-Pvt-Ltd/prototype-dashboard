@@ -12,6 +12,9 @@ import LogsListPage from '../src/pages/Airlines/LogsList';
 import NavBar from '../src/navbar'; // Import your NavBar component
 import WorkspaceSelectionPage from "../src/pages/Airlines/WorkspaceSelectionPage"
 import GSTTableCopy from './pages/GST/GSTTablecopy';
+import IrnTable from './pages/irn'
+import FetchDataPage from './pages/GST/GSTINPUT';
+import DataPage from './pages/GST/DataPage'
 
 const App = () => {
   return (
@@ -27,7 +30,8 @@ const AppRoutes = () => {
   let location = useLocation();
 
   // Define routes where NavBar should not be displayed
-  const excludedRoutes = ["/"];
+  const excludedRoutes = ["/","/irn-table,","/FetchDataPage"];
+  
 
   // Check if current location matches excluded routes
   const shouldRenderNavBar = !excludedRoutes.includes(location.pathname);
@@ -45,6 +49,9 @@ const AppRoutes = () => {
         <Route path="/logs" element={<LogsPage />} />
         <Route path="/logslist" element={<LogsListPage />} />
         <Route path="/SelectWorkspace" element={<WorkspaceSelectionPage />} />
+        <Route path="/irn-table" element={<IrnTable />} />
+        <Route path="/FetchDataPage" element={<FetchDataPage />} />
+        <Route path="/Data" element={<DataPage />} />
       </Routes>
     </>
   );

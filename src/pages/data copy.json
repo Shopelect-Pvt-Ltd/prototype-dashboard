@@ -1,0 +1,152 @@
+[
+  {
+    "_id": {
+      "$oid": "6545ebe5e3a4d61b62369bf4"
+    },
+    "ItemNo": 0,
+    "SlNo": "000010",
+    "IsServc": "N",
+    "PrdDesc": "CDM.13.2G.X.56U.FLOWPACK",
+    "HsnCd": "18063200",
+    "Qty": 225,
+    "Unit": "CTN",
+    "UnitPrice": 3360,
+    "TotAmt": 756000,
+    "Discount": 0,
+    "AssAmt": 756000,
+    "GstRt": 18,
+    "IgstAmt": 136080,
+    "TotItemVal": 892080,
+    "Irn": "a8f8e0b989b3177508f96b6aadfa9353b2b1eb517bb4c83108f7f260b624b945",
+    "AckNo": {
+      "$numberLong": "132314811349893"
+    },
+    "AckDt": "2023-05-05 19:16:00",
+    "Version": "1.1",
+    "TranDtls": {
+      "TaxSch": "GST",
+      "SupTyp": "B2B",
+      "RegRev": "N",
+      "IgstOnIntra": "N"
+    },
+    "DocDtls": {
+      "Typ": "INV",
+      "No": "9230400373",
+      "Dt": "05/05/2023"
+    },
+    "SellerDtls": {
+      "Gstin": "02AAACC0460H1ZE",
+      "LglNm": "MONDELEZ INDIA FOODS PRIVATE LIMITED",
+      "TrdNm": "MONDELEZ INDIA FOODS PRIVATE LIMITED",
+      "Addr1": "VILLAGE SANDOLI, TEHSIL NALAGARH",
+      "Addr2": "Village Sandholi",
+      "Loc": "DISTRICT SOLAN, BADDI",
+      "Pin": 173205,
+      "Stcd": "2"
+    },
+    "BuyerDtls": {
+      "Gstin": "22AAACC0460H1ZC",
+      "LglNm": "RAIPUR DEPOT",
+      "TrdNm": "MONDELEZ INDIA FOODS PRIVATE LIMITED",
+      "Pos": "22",
+      "Addr1": "L.K. Corporates And Logistic Park",
+      "Addr2": "RIC Raipur 1 Ring road no 1",
+      "Loc": "Chhattisgarh",
+      "Pin": 492015,
+      "Stcd": "22"
+    },
+    "ValDtls": {
+      "AssVal": 756000,
+      "CgstVal": 0,
+      "SgstVal": 0,
+      "IgstVal": 136080,
+      "CesVal": 0,
+      "StCesVal": 0,
+      "TotInvVal": 892080
+    },
+    "SellerGstin": "02AAACC0460H1ZE",
+    "BuyerGstin": "22AAACC0460H1ZC",
+    "DocNo": "9230400373",
+    "DocTyp": "INV",
+    "DocDt": "05/05/2023",
+    "TotInvVal": 892080,
+    "ItemCnt": 1,
+    "MainHsnCode": "18063200",
+    "IrnDt": "2023-05-05 19:16:00"
+  },
+  {
+    "_id": {
+      "$oid": "6545ebe5e3a4d61b62369bf4"
+    },
+    "ItemNo": 0,
+    "SlNo": "000010",
+    "IsServc": "N",
+    "PrdDesc": "CDM.13.2G.X.56U.FLOWPACK",
+    "HsnCd": "18063200",
+    "Qty": 225,
+    "Unit": "CTN",
+    "UnitPrice": 3360,
+    "TotAmt": 756000,
+    "Discount": 0,
+    "AssAmt": 756000,
+    "GstRt": 18,
+    "IgstAmt": 136080,
+    "TotItemVal": 892080,
+    "Irn": "a8f8e0b989b3177508f96b6aadfa9353b2b1eb517bb4c83108f7f260b624b945",
+    "AckNo": {
+      "$numberLong": "132314811349893"
+    },
+    "AckDt": "2023-05-05 19:16:00",
+    "Version": "1.1",
+    "TranDtls": {
+      "TaxSch": "GST",
+      "SupTyp": "B2B",
+      "RegRev": "N",
+      "IgstOnIntra": "N"
+    },
+    "DocDtls": {
+      "Typ": "INV",
+      "No": "9230400373",
+      "Dt": "05/05/2023"
+    },
+    "SellerDtls": {
+      "Gstin": "02AAACC0460H1ZE",
+      "LglNm": "MONDELEZ INDIA FOODS PRIVATE LIMITED",
+      "TrdNm": "MONDELEZ INDIA FOODS PRIVATE LIMITED",
+      "Addr1": "VILLAGE SANDOLI, TEHSIL NALAGARH",
+      "Addr2": "Village Sandholi",
+      "Loc": "DISTRICT SOLAN, BADDI",
+      "Pin": 173205,
+      "Stcd": "2"
+    },
+    "BuyerDtls": {
+      "Gstin": "22AAACC0460H1ZC",
+      "LglNm": "RAIPUR DEPOT",
+      "TrdNm": "MONDELEZ INDIA FOODS PRIVATE LIMITED",
+      "Pos": "22",
+      "Addr1": "L.K. Corporates And Logistic Park",
+      "Addr2": "RIC Raipur 1 Ring road no 1",
+      "Loc": "Chhattisgarh",
+      "Pin": 492015,
+      "Stcd": "22"
+    },
+    "ValDtls": {
+      "AssVal": 756000,
+      "CgstVal": 0,
+      "SgstVal": 0,
+      "IgstVal": 136080,
+      "CesVal": 0,
+      "StCesVal": 0,
+      "TotInvVal": 892080
+    },
+    "SellerGstin": "02AAACC0460H1ZE",
+    "BuyerGstin": "22AAACC0460H1ZC",
+    "DocNo": "9230400373",
+    "DocTyp": "INV",
+    "DocDt": "05/05/2023",
+    "TotInvVal": 892080,
+    "ItemCnt": 1,
+    "MainHsnCode": "18063200",
+    "IrnDt": "2023-05-05 19:16:00"
+  }
+]

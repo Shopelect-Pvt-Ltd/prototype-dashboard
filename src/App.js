@@ -15,6 +15,8 @@ import GSTTableCopy from './pages/GST/GSTTablecopy';
 import IrnTable from './pages/irn'
 import FetchDataPage from './pages/GST/GSTINPUT';
 import DataPage from './pages/GST/DataPage'
+import Domain from './pages/GST/Domain'; // Import the Domain component
+import GSTIN from './pages/GST/GSTIN';
 
 const App = () => {
   return (
@@ -30,7 +32,7 @@ const AppRoutes = () => {
   let location = useLocation();
 
   // Define routes where NavBar should not be displayed
-  const excludedRoutes = ["/","/irn-table,","/FetchDataPage"];
+  const excludedRoutes = ["/","/irn-table,","/FetchDataPage","/domainData","/gstin-data"];
   
 
   // Check if current location matches excluded routes
@@ -52,6 +54,8 @@ const AppRoutes = () => {
         <Route path="/irn-table" element={<IrnTable />} />
         <Route path="/FetchDataPage" element={<FetchDataPage />} />
         <Route path="/Data" element={<DataPage />} />
+        <Route path="/domainData" element={<Domain />} />
+        <Route path="/gstin-data" element={<GSTIN />} />
       </Routes>
     </>
   );

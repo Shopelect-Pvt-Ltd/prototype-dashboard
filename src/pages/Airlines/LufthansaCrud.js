@@ -48,10 +48,10 @@ const LufthansaCrud = () => {
 
     const columnDefs = [
         { checkboxSelection: true, headerCheckboxSelection: true, width: 50 },
-        { headerName: 'Pan', field: 'pan', filter: 'agTextColumnFilter', floatingFilterComponent: 'MyFilter', floatingFilter: true },
-        { headerName: 'Client', field: 'airline_name', filter: 'agTextColumnFilter', floatingFilterComponent: 'MyFilter', floatingFilter: true },
-        { headerName: 'Workspace', field: 'workspace', filter: 'agTextColumnFilter', floatingFilterComponent: 'MyFilter', floatingFilter: true },
-        { headerName: 'Portal ID', field: 'portal_id', filter: 'agTextColumnFilter', floatingFilterComponent: 'MyFilter', floatingFilter: true },
+        { headerName: 'Pan', field: 'pan', filter: 'agTextColumnFilter', floatingFilterComponent: 'MyFilter', floatingFilter: true ,enableRowGroup:true },
+        { headerName: 'Client', field: 'airline_name', filter: 'agTextColumnFilter', floatingFilterComponent: 'MyFilter', floatingFilter: true,enableRowGroup:true  },
+        { headerName: 'Workspace', field: 'workspace', filter: 'agTextColumnFilter', floatingFilterComponent: 'MyFilter', floatingFilter: true ,enableRowGroup:true },
+        { headerName: 'Portal ID', field: 'portal_id', filter: 'agTextColumnFilter', floatingFilterComponent: 'MyFilter', floatingFilter: true ,enableRowGroup:true },
         // { headerName: 'Password', field: 'password', filter: true },
         {
             headerName: 'Portal Pass',
@@ -61,8 +61,8 @@ const LufthansaCrud = () => {
                 <span>{'*'.repeat(params.value.length)}</span>
             ),
         },
-        { headerName: 'Code', field: 'code', filter: 'agTextColumnFilter', floatingFilterComponent: 'MyFilter', floatingFilter: true },
-        { headerName: 'Verified', field: 'verified', filter: 'agTextColumnFilter', floatingFilterComponent: 'MyFilter', floatingFilter: true },
+        { headerName: 'Code', field: 'code', filter: 'agTextColumnFilter', floatingFilterComponent: 'MyFilter', floatingFilter: true,enableRowGroup:true  },
+        { headerName: 'Verified', field: 'verified', filter: 'agTextColumnFilter', floatingFilterComponent: 'MyFilter', floatingFilter: true,enableRowGroup:true  },
         {
             headerName: 'Actions',
             cellRenderer: (params) => (
@@ -173,6 +173,7 @@ const LufthansaCrud = () => {
             <div className="ag-theme-alpine" style={{ height: '100%', width: '100%' }}>
                 <AgGridReact
                     columnDefs={columnDefs}
+                    rowGroupPanelShow='always'
                     rowData={rowData}
                     animateRows={true}
                     rowSelection="multiple"

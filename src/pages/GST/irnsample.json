@@ -1,0 +1,143 @@
+{
+  "_id": {
+      "$oid": "65c0d1ac47de9ff9c083e7d5"
+  },
+  "AckNo": {
+      "$numberLong": "172414143297083"
+  },
+  "AckDt": "2024-01-03 11:48:00",
+  "Irn": "945fb884fa87c86167a5475693546f8fbb74f2be850fa15770c78637ef34de30",
+  "SignedInvoice": "...",
+  "SignedQRCode": "bQxA",
+  "Status": "ACT",
+  "SignedQRCodeParsed": {
+      "SellerGstin": "07AABCC9229P1Z5",
+      "BuyerGstin": "24AALCP0909M2Z6",
+      "DocNo": "109002550",
+      "DocTyp": "INV",
+      "DocDt": "31/12/2023",
+      "TotInvVal": 280250,
+      "ItemCnt": 1,
+      "MainHsnCode": "998332",
+      "Irn": "945fb884fa87c86167a5475693546f8fbb74f2be850fa15770c78637ef34de30",
+      "IrnDt": "2024-01-03 11:48:00"
+  },
+  "SignedInvoiceParsed": {
+      "AckNo": {
+          "$numberLong": "172414143297083"
+      },
+      "AckDt": "2024-01-03 11:48:00",
+      "Irn": "945fb884fa87c86167a5475693546f8fbb74f2be850fa15770c78637ef34de30",
+      "Version": "1.1",
+      "TranDtls": {
+          "TaxSch": "GST",
+          "SupTyp": "B2B",
+          "RegRev": "N",
+          "IgstOnIntra": "N"
+      },
+      "DocDtls": {
+          "Typ": "INV",
+          "No": "109002550",
+          "Dt": "31/12/2023"
+      },
+      "SellerDtls": {
+          "Gstin": "07AABCC9229P1Z5",
+          "LglNm": "Currie & Brown (India) Pvt. Ltd.",
+          "TrdNm": "Currie & Brown (India) Pvt. Ltd.",
+          "Addr1": "201-B/3, 2ND FLOOR, D-21, CORPORATE PARK, DWARKA ,SEC-21, NEW DELHI",
+          "Loc": "New Delhi",
+          "Pin": 110077,
+          "Stcd": "07"
+      },
+      "BuyerDtls": {
+          "Gstin": "24AALCP0909M2Z6",
+          "LglNm": "PIRAMAL PHARMA LTD.",
+          "TrdNm": "PIRAMAL PHARMA LTD.",
+          "Pos": "24",
+          "Addr1": "PLOT NO D-2/11/A1, GIDC PHASE II, DAHEJ, Dahej SIR, Bharuch",
+          "Loc": "Dahej SIR",
+          "Pin": 392130,
+          "Stcd": "24"
+      },
+      "ItemList": [
+          {
+              "ItemNo": 0,
+              "SlNo": "1",
+              "IsServc": "Y",
+              "PrdDesc": " Fee as per Bill Annexture",
+              "FreeQty": 0,
+              "Unit": "UNT",
+              "AssAmt": 237500,
+              "OrdLineRef": "0",
+              "Irn": "945fb884fa87c86167a5475693546f8fbb74f2be850fa15770c78637ef34de30",
+              "AckNo": {
+                  "$numberLong": "172414143297083"
+              },
+              "AckDt": "2024-01-03 11:48:00",
+              "Version": "1.1",
+              "TranDtls": {
+                  "TaxSch": "GST",
+                  "SupTyp": "B2B",
+                  "RegRev": "N",
+                  "IgstOnIntra": "N"
+              },
+              "DocDtls": {
+                  "Typ": "INV",
+                  "No": "109002550",
+                  "Dt": "31/12/2023"
+              },
+              "SellerDtls": {
+                  "Gstin": "07AABCC9229P1Z5",
+                  "LglNm": "Currie & Brown (India) Pvt. Ltd.",
+                  "TrdNm": "Currie & Brown (India) Pvt. Ltd.",
+                  "Addr1": "201-B/3, 2ND FLOOR, D-21, CORPORATE PARK, DWARKA ,SEC-21, NEW DELHI",
+                  "Loc": "New Delhi",
+                  "Pin": 110077,
+                  "Stcd": "07"
+              },
+              "BuyerDtls": {
+                  "Gstin": "24AALCP0909M2Z6",
+                  "LglNm": "PIRAMAL PHARMA LTD.",
+                  "TrdNm": "PIRAMAL PHARMA LTD.",
+                  "Pos": "24",
+                  "Addr1": "PLOT NO D-2/11/A1, GIDC PHASE II, DAHEJ, Dahej SIR, Bharuch",
+                  "Loc": "Dahej SIR",
+                  "Pin": 392130,
+                  "Stcd": "24"
+              },
+              "ValDtls": {
+                  "AssVal": 237500,
+                  "CgstVal": 0,
+                  "SgstVal": 0,
+                  "IgstVal": 42750,
+                  "CesVal": 0,
+                  "StCesVal": 0,
+                  "TotInvVal": 280250
+              },
+              "SellerGstin": "07AABCC9229P1Z5",
+              "BuyerGstin": "24AALCP0909M2Z6",
+              "DocNo": "109002550",
+              "DocTyp": "INV",
+              "DocDt": "31/12/2023",
+              "TotInvVal": 280250,
+              "ItemCnt": 1,
+              "MainHsnCode": "998332",
+              "IrnDt": "2024-01-03 11:48:00"
+          }
+      ],
+      "ValDtls": {
+          "AssVal": 237500,
+          "CgstVal": 0,
+          "SgstVal": 0,
+          "IgstVal": 42750,
+          "CesVal": 0,
+          "StCesVal": 0,
+          "TotInvVal": 280250
+      },
+      "PayDtls": {
+          "Mode": "EPAY"
+      }
+  },
+  "file_id": "6397e3bb-0edc-4df7-acac-f80a1e79e90f",
+  "status": "UNPROCESSED"
+}

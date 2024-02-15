@@ -19,6 +19,10 @@ import Domain from './pages/GST/Domain'; // Import the Domain component
 import GSTIN from './pages/GST/GSTIN';
 import GSTCrud from './pages/GST/GSTCrud';
 import GSTUpload from './pages/GST/GSTUpload';
+import ExamplePage from './pages/GST/Example';
+import AirlineCrud from './pages/Airlines/AirlineCrud';
+import LufthansaCrud from './pages/Airlines/LufthansaCrud';
+
 
 const App = () => {
   return (
@@ -34,7 +38,7 @@ const AppRoutes = () => {
   let location = useLocation();
 
   // Define routes where NavBar should not be displayed
-  const excludedRoutes = ["/","/irn-table,","/FetchDataPage","/domainData","/gstin-data","/GSTCrud","/GSTUpload"];
+  const excludedRoutes = ["/","/irn-table,","/FetchDataPage","/domainData","/gstin-data","/GSTCrud","/GSTUpload","/Example","/airlinecreds","/lufthansacreds"];
   
 
   // Check if current location matches excluded routes
@@ -59,7 +63,10 @@ const AppRoutes = () => {
         <Route path="/domainData" element={<Domain />} />
         <Route path="/gstin-data" element={<GSTIN />} />
         <Route path="/GSTCrud" element={<GSTCrud />} />
-        <Route path="/GSTUpload" element={<GSTUpload />} />GSTUpload
+        <Route path="/GSTUpload" element={<GSTUpload />} />
+        <Route path="/Example" element={<ExamplePage />} />
+        <Route path="/airlinecreds" element={<AirlineCrud />} />/lufthansacreds
+        <Route path="/lufthansacreds" element={<LufthansaCrud />} />
       </Routes>
     </>
   );

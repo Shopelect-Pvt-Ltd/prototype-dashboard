@@ -104,7 +104,10 @@ const LufthansaCrud = () => {
     };
 
     const handleAddNew = async () => {
-        setPopupData({ client: '', gstin: '', status: '', password: '' });
+        setPopupData({ Pan: '', Client: '', Workspace: '', password: '' ,Portal_ID: '',
+        Portal_Pass: '',
+        Code: '',
+        Verified: '' });
         setShowPopup(true);
     };
 

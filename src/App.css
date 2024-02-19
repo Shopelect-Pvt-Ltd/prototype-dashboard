@@ -470,3 +470,112 @@ input[type="date"] {
   margin-bottom: 1rem;
 }
 
+
+
+
+
+
+
+
+
+.dashboard-container {
+  padding: 20px;
+  
+}
+
+.dashboard-container h1 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  
+}
+
+.dashboard-container button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.dashboard-container button:hover {
+  background-color: #0056b3;
+}
+
+.ag-theme-alpine {
+  width: 100%;
+  height: 100%;
+}
+
+/* Adjustments to Ag-Grid components */
+.ag-root-wrapper {
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.ag-header {
+  background-color: #f4f4f4;
+}
+
+.ag-header-cell {
+  border-bottom: 1px solid #ddd;
+}
+
+.ag-header-cell-text {
+  font-weight: bold;
+}
+
+.ag-cell {
+  border-bottom: 1px solid #ddd;
+}
+
+.ag-row {
+  transition: background-color 0.3s ease;
+}
+
+.ag-row:hover {
+  background-color: #f9f9f9;
+}
+
+/* Adjustments to Ag-Grid tool panels */
+.ag-side-bar {
+  background-color: #f4f4f4 !important;
+  border-left: 1px solid #ddd;
+}
+
+.ag-side-bar-panel {
+  border-bottom: 1px solid #ddd;
+}
+
+.ag-tool-panel-wrapper {
+  padding: 10px;
+}
+
+.ag-tool-panel-column {
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.ag-tool-panel-column:hover {
+  background-color: #e9e9e9;
+}
+
+
+
+
+
+
+
+h1 {
+  font-size: 24px;
+  padding-left: 20px;
+  font-weight: bold;
+  color: #333; /* Text color */
+  background-color: #0acdf4; /* Background color */
+  padding: 15px 20px; /* Add some padding for spacing */
+  border-radius: 8px; /* Add rounded corners */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
+  text-align: center; /* Center align text */
+}
+

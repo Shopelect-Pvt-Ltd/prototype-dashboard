@@ -22,6 +22,7 @@ import GSTUpload from './pages/GST/GSTUpload';
 import ExamplePage from './pages/GST/Example';
 import AirlineCrud from './pages/Airlines/AirlineCrud';
 import LufthansaCrud from './pages/Airlines/LufthansaCrud';
+import MetaTable from './pages/Airlines/MetaTable';
 
 
 const App = () => {
@@ -38,7 +39,7 @@ const AppRoutes = () => {
   let location = useLocation();
 
   // Define routes where NavBar should not be displayed
-  const excludedRoutes = ["/","/irn-table,","/FetchDataPage","/domainData","/gstin-data","/GSTCrud","/GSTUpload","/Example","/airlinecreds","/lufthansacreds"];
+  const excludedRoutes = ["/","/irn-table,","/FetchDataPage","/domainData","/gstin-data","/GSTCrud","/GSTUpload","/Example","/airlinecreds","/lufthansacreds","/MetaTable"];
   
 
   // Check if current location matches excluded routes
@@ -65,8 +66,9 @@ const AppRoutes = () => {
         <Route path="/GSTCrud" element={<GSTCrud />} />
         <Route path="/GSTUpload" element={<GSTUpload />} />
         <Route path="/Example" element={<ExamplePage />} />
-        <Route path="/airlinecreds" element={<AirlineCrud />} />/lufthansacreds
+        <Route path="/airlinecreds" element={<AirlineCrud />} />/MetaTable
         <Route path="/lufthansacreds" element={<LufthansaCrud />} />
+        <Route path="/MetaTable" element={<MetaTable />} />
       </Routes>
     </>
   );

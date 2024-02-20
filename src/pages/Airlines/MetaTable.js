@@ -21,6 +21,7 @@ const MyGrid = () => {
     const fetchData = async () => {
         try {
             const response = await axios.get('http://127.0.0.1:5000/api/gstcreds');
+            console.log("fetched data",response.data)
             const rowData = [];
             if (typeof response.data === 'object' && response.data !== null) {
                 Object.entries(response.data).forEach(([customerId, attributes]) => {
@@ -44,6 +45,7 @@ const MyGrid = () => {
             let response;
             if (customFilterApplied) {
                 response = await axios.get(`http://127.0.0.1:5000/api/gstcreds/${params.data.Customer_id}`);
+                console.log("filter data",response.data)
                 let filteredData = [];
                 if (customFilterApplied.field === 'R1') {
                     filteredData = response.data.filter(row => row.script_name === 'R1');
@@ -71,6 +73,8 @@ const MyGrid = () => {
 
     const detailColumnDefs = [
         { headerName: 'Credentials ID', field: 'credential_id' },
+        { headerName: 'Business Name', field: 'business_name' },
+        { headerName: 'GSTIN', field: 'gstin' },
         { headerName: 'Download Month', field: 'download_month' },
         { headerName: 'Download At', field: 'stadownloaded_attus' },
         { headerName: 'ID', field: 'id' },
@@ -81,6 +85,7 @@ const MyGrid = () => {
         { headerName: 'URL', field: 'url' },
         { headerName: 'Script Name', field: 'script_name' },
     ];
+
 
     const detailCellRendererParams = {
         detailGridOptions: {

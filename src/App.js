@@ -22,7 +22,7 @@ import GSTUpload from './pages/GST/GSTUpload';
 import ExamplePage from './pages/GST/Example';
 import AirlineCrud from './pages/Airlines/AirlineCrud';
 import LufthansaCrud from './pages/Airlines/LufthansaCrud';
-import MetaTable from './pages/Airlines/MetaTable';
+import MyGrid from './pages/Airlines/MetaTable';
 
 
 const App = () => {
@@ -68,7 +68,7 @@ const AppRoutes = () => {
         <Route path="/Example" element={<ExamplePage />} />
         <Route path="/airlinecreds" element={<AirlineCrud />} />/MetaTable
         <Route path="/lufthansacreds" element={<LufthansaCrud />} />
-        <Route path="/MetaTable" element={<MetaTable />} />
+        <Route path="/MetaTable" element={<MyGrid />} />
       </Routes>
     </>
   );
